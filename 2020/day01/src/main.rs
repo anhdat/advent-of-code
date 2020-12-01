@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 use std::fs;
 
 fn list_of_nums_from_file() -> Vec<i32> {
