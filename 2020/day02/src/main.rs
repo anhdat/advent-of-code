@@ -32,7 +32,7 @@ impl Policy {
             .filter(|c| *c == self.character)
             .count();
 
-        count >= self.min && count <= self.max
+        (self.min..=self.max).contains(&count)
     }
 }
 
