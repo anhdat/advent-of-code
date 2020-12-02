@@ -26,8 +26,9 @@ fn find_num(nums: Vec<i32>, total: i32) -> Option<i32> {
 #[allow(dead_code)]
 fn part_1_solution_1() {
     let nums = list_of_nums_from_file();
-    let found = find_num(nums, 2020).unwrap();
-    println!("{} {} {}", found, 2020 - found, (found * (2020 - found)));
+    if let Some(found) = find_num(nums, 2020) {
+        println!("{} {} {}", found, 2020 - found, (found * (2020 - found)));
+    }
 }
 
 #[allow(dead_code)]
@@ -39,8 +40,7 @@ fn part_2_solution_1() {
             .filter(|sub_num| *sub_num != num)
             .cloned()
             .collect();
-        let found = find_num(sub_nums, 2020 - num).unwrap();
-        if found != 0 {
+        if let Some(found) = find_num(sub_nums, 2020 - num) {
             println!(
                 "{} {} {} {}",
                 found,
@@ -54,5 +54,6 @@ fn part_2_solution_1() {
 }
 
 fn main() {
+    part_1_solution_1();
     part_2_solution_1();
 }
