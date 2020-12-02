@@ -13,19 +13,18 @@ fn list_of_strings_from_file() -> Vec<String> {
 
 #[derive(Debug)]
 struct Policy {
-    min: i32,
-    max: i32,
+    min: usize,
+    max: usize,
     character: char,
 }
 
 impl Policy {
     fn is_valid(&self, password: &str) -> bool {
-        let mut count = 0;
-        for c in password.to_string().chars() {
-            if c == self.character {
-                count += 1;
-            }
-        }
+        let count = password
+            .to_string()
+            .chars()
+            .filter(|c| *c == self.character)
+            .count();
         return count >= self.min && count <= self.max;
     }
 }
