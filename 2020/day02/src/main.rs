@@ -39,12 +39,12 @@ impl Policy {
 fn parse(line: &str) -> Option<(usize, usize, char, &str)> {
     let comps = RE.captures(line)?;
 
-    let pos1 = comps.get(1)?.as_str().parse().ok()?;
-    let pos2 = comps.get(2)?.as_str().parse().ok()?;
-    let pos3 = comps.get(3)?.as_str().chars().next()?;
-    let pos4 = comps.get(4)?.as_str();
+    let a = comps.get(1)?.as_str().parse().ok()?;
+    let b = comps.get(2)?.as_str().parse().ok()?;
+    let c = comps.get(3)?.as_str().chars().next()?;
+    let d = comps.get(4)?.as_str();
 
-    Some((pos1, pos2, pos3, pos4))
+    Some((a, b, c, d))
 }
 
 fn is_valid(line: &str) -> Option<bool> {
