@@ -36,15 +36,24 @@ impl Policy {
     }
 }
 
-fn is_valid(line: &str) -> Option<bool> {
-    // 2-4 p: vpkpp
+fn parse(line: &str) -> Option<(usize, usize, char, &str)> {
     let comps = RE.captures(line)?;
+
+    let pos1 = comps.get(1)?.as_str().parse().ok()?;
+    let pos2 = comps.get(2)?.as_str().parse().ok()?;
+    let pos3 = comps.get(3)?.as_str().chars().next()?;
+    let pos4 = comps.get(4)?.as_str();
+
+    Some((pos1, pos2, pos3, pos4))
+}
+
+fn is_valid(line: &str) -> Option<bool> {
+    let (min, max, character, password) = parse(line)?;
     let policy = Policy {
-        min: comps.get(1)?.as_str().parse().ok()?,
-        max: comps.get(2)?.as_str().parse().ok()?,
-        character: comps.get(3)?.as_str().chars().next()?,
+        min,
+        max,
+        character,
     };
-    let password = comps.get(4)?.as_str();
 
     Some(policy.is_valid(password))
 }
@@ -70,13 +79,12 @@ impl Policy2 {
 }
 
 fn is_valid2(line: &str) -> Option<bool> {
-    let comps = RE.captures(line)?;
+    let (pos1, pos2, character, password) = parse(line)?;
     let policy = Policy2 {
-        pos1: comps.get(1)?.as_str().parse().ok()?,
-        pos2: comps.get(2)?.as_str().parse().ok()?,
-        character: comps.get(3)?.as_str().chars().next()?,
+        pos1,
+        pos2,
+        character,
     };
-    let password = comps.get(4)?.as_str();
 
     Some(policy.is_valid(password))
 }
