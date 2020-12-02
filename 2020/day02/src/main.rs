@@ -25,7 +25,8 @@ impl Policy {
             .chars()
             .filter(|c| *c == self.character)
             .count();
-        return count >= self.min && count <= self.max;
+
+        count >= self.min && count <= self.max
     }
 }
 
@@ -39,7 +40,7 @@ fn is_valid(line: &str) -> bool {
         character: comps_3[0].chars().next().unwrap(),
     };
     let password = comps[2];
-    return policy.is_valid(password);
+    policy.is_valid(password)
 }
 
 fn part_1() {
@@ -57,8 +58,8 @@ struct Policy2 {
 
 impl Policy2 {
     fn is_valid(&self, password: &str) -> bool {
-        return (password.chars().nth(self.pos1 - 1).unwrap() == self.character)
-            ^ (password.chars().nth(self.pos2 - 1).unwrap() == self.character);
+        (password.chars().nth(self.pos1 - 1).unwrap() == self.character)
+            ^ (password.chars().nth(self.pos2 - 1).unwrap() == self.character)
     }
 }
 
@@ -72,7 +73,8 @@ fn is_valid2(line: &str) -> bool {
         character: comps_3[0].chars().next().unwrap(),
     };
     let password = comps[2];
-    return policy.is_valid(password);
+
+    policy.is_valid(password)
 }
 
 fn part_2() {
@@ -82,6 +84,7 @@ fn part_2() {
 }
 
 fn main() {
+    part_1();
     part_2();
 }
 
