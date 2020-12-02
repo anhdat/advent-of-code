@@ -45,9 +45,7 @@ fn is_valid(line: &str) -> bool {
 
 fn part_1() {
     let lines = list_of_strings_from_file();
-    let count = lines
-        .iter()
-        .fold(0, |sum, val| if is_valid(val) { sum + 1 } else { sum });
+    let count = lines.iter().filter(|l| is_valid(l)).count();
     println!("{}", count);
 }
 
@@ -79,10 +77,8 @@ fn is_valid2(line: &str) -> bool {
 }
 
 fn part_2() {
-    let lines = list_of_string_from_file();
-    let count = lines
-        .iter()
-        .fold(0, |sum, val| if is_valid2(val) { sum + 1 } else { sum });
+    let lines = list_of_strings_from_file();
+    let count = lines.iter().filter(|l| is_valid2(l)).count();
     println!("{}", count);
 }
 
