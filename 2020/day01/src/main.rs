@@ -13,20 +13,20 @@ fn list_of_nums_from_file() -> Vec<i32> {
         .collect()
 }
 
-fn find_num(nums: Vec<i32>, total: i32) -> i32 {
-    let set: HashSet<i32> = nums.iter().map(|num| total - num).collect();
+fn find_num(nums: Vec<i32>, total: i32) -> Option<i32> {
+    let complements: HashSet<i32> = nums.iter().map(|num| total - num).collect();
     for num in nums {
-        if set.contains(&num) {
-            return num;
+        if complements.contains(&num) {
+            return Some(num);
         }
     }
-    return 0;
+    None
 }
 
 #[allow(dead_code)]
 fn part_1_solution_1() {
     let nums = list_of_nums_from_file();
-    let found = find_num(nums, 2020);
+    let found = find_num(nums, 2020).unwrap();
     println!("{} {} {}", found, 2020 - found, (found * (2020 - found)));
 }
 
@@ -39,7 +39,7 @@ fn part_2_solution_1() {
             .filter(|sub_num| *sub_num != num)
             .cloned()
             .collect();
-        let found = find_num(sub_nums, 2020 - num);
+        let found = find_num(sub_nums, 2020 - num).unwrap();
         if found != 0 {
             println!(
                 "{} {} {} {}",
