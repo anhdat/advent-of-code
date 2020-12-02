@@ -1,6 +1,6 @@
 use std::fs;
 
-fn list_of_string_from_file() -> Vec<String> {
+fn list_of_strings_from_file() -> Vec<String> {
     let filename = "./input";
     let content = fs::read_to_string(filename).expect("Something went wrong reading the file");
     content
@@ -44,7 +44,7 @@ fn is_valid(line: &str) -> bool {
 }
 
 fn part_1() {
-    let lines = list_of_string_from_file();
+    let lines = list_of_strings_from_file();
     let count = lines
         .iter()
         .fold(0, |sum, val| if is_valid(val) { sum + 1 } else { sum });
