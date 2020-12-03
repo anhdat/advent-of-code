@@ -20,13 +20,11 @@ fn trarverse_and_count_trees_functionally(map: Vec<Vec<char>>, slope: (usize, us
     let h = map.len();
     let w = map[0].len();
 
-    let xs = (0..).step_by(slope.0).map(|x| x % w);
-    let ys = (0..).step_by(slope.1);
+    let xs = (0..w).cycle().step_by(slope.0);
+    let ys = (0..h).step_by(slope.1);
     let xys = xs.zip(ys);
 
-    xys.take_while(|xy| xy.1 < h)
-        .filter(|xy| map[xy.1][xy.0] == '#')
-        .count() as u32
+    xys.filter(|xy| map[xy.1][xy.0] == '#').count() as u32
 }
 
 fn trarverse_and_count_trees(map: Vec<Vec<char>>, slope: (usize, usize)) -> u32 {
