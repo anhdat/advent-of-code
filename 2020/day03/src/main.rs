@@ -27,7 +27,7 @@ fn trarverse_and_count_trees_functionally(map: &Vec<Vec<char>>, slope: (usize, u
     xys.filter(|xy| map[xy.1][xy.0] == '#').count() as u32
 }
 
-fn trarverse_and_count_trees(map: Vec<Vec<char>>, slope: (usize, usize)) -> u32 {
+fn trarverse_and_count_trees(map: &Vec<Vec<char>>, slope: (usize, usize)) -> u32 {
     let mut pos = Position { x: 0, y: 0 };
     let h = map.len();
     let w = map[0].len();
