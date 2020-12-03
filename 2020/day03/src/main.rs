@@ -16,7 +16,7 @@ fn parse(input: &str) -> Vec<Vec<char>> {
         .collect()
 }
 
-fn trarverse_and_count_trees_functionally(map: Vec<Vec<char>>, slope: (usize, usize)) -> u32 {
+fn trarverse_and_count_trees_functionally(map: &Vec<Vec<char>>, slope: (usize, usize)) -> u32 {
     let h = map.len();
     let w = map[0].len();
 
@@ -46,8 +46,7 @@ fn trarverse_and_count_trees(map: Vec<Vec<char>>, slope: (usize, usize)) -> u32 
 }
 
 fn part_1(input: &str) {
-    // let result = trarverse_and_count_trees(parse(&input), (3, 1));
-    let result = trarverse_and_count_trees_functionally(parse(&input), (3, 1));
+    let result = trarverse_and_count_trees_functionally(&parse(&input), (3, 1));
     println!("{}", result);
 }
 
@@ -56,8 +55,7 @@ fn part_2(input: &str) {
     let slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
     let result: u64 = slopes
         .iter()
-        // .map(|s| trarverse_and_count_trees(map.clone(), *s) as u64)
-        .map(|s| trarverse_and_count_trees_functionally(map.clone(), *s) as u64)
+        .map(|s| trarverse_and_count_trees_functionally(&map, *s) as u64)
         .product::<u64>();
     println!("{}", result);
 }
