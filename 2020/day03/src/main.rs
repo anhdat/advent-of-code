@@ -34,14 +34,13 @@ fn trarverse_and_count_trees(map: Vec<Vec<char>>, slope: (usize, usize)) -> u32 
     let w = map[0].len();
 
     let mut count = 0;
-    while pos.y < h - 1 {
-        pos.x += slope.0;
-        pos.x = pos.x % w;
-        pos.y += slope.1;
+    while pos.y < h {
         let current = map[pos.y][pos.x];
         if current == '#' {
             count += 1;
-        }
+        };
+        pos.x = (pos.x + slope.0) % w;
+        pos.y += slope.1;
     }
 
     count
