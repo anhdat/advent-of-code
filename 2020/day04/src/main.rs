@@ -52,19 +52,19 @@ fn is_valid_height(input: &str) -> bool {
     }
 }
 
+fn range_contains(range: RangeInclusive<usize>, num_raw: &str) -> bool {
+    num_raw
+        .parse::<usize>()
+        .map(|x| range.contains(&x))
+        .unwrap_or(false)
+}
+
 fn is_valid_2(input: &str) -> bool {
     let fields: Vec<(&str, &str)> = input
         .split_whitespace()
         .map(|s| s.split(':').collect::<Vec<&str>>())
         .map(|p| (p[0], p[1]))
         .collect();
-
-    fn range_contains(range: RangeInclusive<usize>, num_raw: &str) -> bool {
-        num_raw
-            .parse::<usize>()
-            .map(|x| range.contains(&x))
-            .unwrap_or(false)
-    }
 
     fields.iter().all(|field| match field {
         ("hgt", value) => is_valid_height(value),
