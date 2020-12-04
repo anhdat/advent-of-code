@@ -22,16 +22,12 @@ lazy_static! {
 // Part 1
 
 fn is_valid(input: &str) -> bool {
-    let comps: Vec<Vec<&str>> = input
+    let fields: HashSet<&str> = input
         .split_whitespace()
-        .map(|s| s.split(':').collect())
+        .flat_map(|s| s.split(':').take(1))
         .collect();
-    let count = comps
-        .iter()
-        .filter(|pair| REQUIREDS.contains(pair[0]))
-        .count();
 
-    count == REQUIREDS.len()
+    REQUIREDS.is_subset(&fields)
 }
 
 fn part_1(input: &str) {
