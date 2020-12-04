@@ -2,6 +2,7 @@ use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::{HashMap, HashSet};
 use std::fs;
+use std::ops::RangeInclusive;
 
 lazy_static! {
     static ref RE_HCL: Regex = Regex::new(r"^#[0-9,a-f]{6}$").unwrap();
@@ -56,28 +57,29 @@ fn is_valid_height(input: &str) -> bool {
 }
 
 fn is_valid_2(input: &str) -> bool {
-    let comps: HashMap<&str, &str> = input
+    let fields: Vec<(&str, &str)> = input
         .split_whitespace()
         .map(|s| s.split(':').collect())
         .map(|p: Vec<&str>| (p[0], p[1]))
         .collect();
 
-    is_valid_height(&comps["hgt"])
-        && comps["byr"]
-            .parse::<i32>()
-            .map(|x| (1920..=2002).contains(&x))
+    fn range_contains(range: RangeInclusive<usize>, num_raw: &str) -> bool {
+        num_raw
+            .parse::<usize>()
+            .map(|x| range.contains(&x))
             .unwrap_or(false)
-        && comps["iyr"]
-            .parse::<i32>()
-            .map(|x| (2010..=2020).contains(&x))
-            .unwrap_or(false)
-        && comps["eyr"]
-            .parse::<i32>()
-            .map(|x| (2020..=2030).contains(&x))
-            .unwrap_or(false)
-        && RE_HCL.is_match(&comps["hcl"])
-        && RE_PID.is_match(&comps["pid"])
-        && EYE_COLORS.contains(&comps["ecl"])
+    }
+
+    fields.iter().all(|field| match field {
+        ("hgt", value) => is_valid_height(value),
+        ("byr", value) => range_contains(1920..=2002, value),
+        ("iyr", value) => range_contains(2010..=2020, value),
+        ("eyr", value) => range_contains(2020..=2030, value),
+        ("hcl", value) => RE_HCL.is_match(value),
+        ("pid", value) => RE_PID.is_match(value),
+        ("ecl", value) => EYE_COLORS.contains(value),
+        _ => true,
+    })
 }
 
 fn part_2(input: &str) {
