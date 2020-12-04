@@ -65,17 +65,14 @@ fn is_valid_2(input: &str) -> bool {
     is_valid_height(&comps["hgt"])
         && comps["byr"]
             .parse::<i32>()
-            .ok()
             .map(|x| (1920..=2002).contains(&x))
             .unwrap_or(false)
         && comps["iyr"]
             .parse::<i32>()
-            .ok()
             .map(|x| (2010..=2020).contains(&x))
             .unwrap_or(false)
         && comps["eyr"]
             .parse::<i32>()
-            .ok()
             .map(|x| (2020..=2030).contains(&x))
             .unwrap_or(false)
         && RE_HCL.is_match(&comps["hcl"])
