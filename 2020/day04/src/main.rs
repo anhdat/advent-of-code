@@ -4,8 +4,8 @@ use std::collections::{HashMap, HashSet};
 use std::fs;
 
 lazy_static! {
-    static ref RE_HCL: Regex = Regex::new(r"#[0-9,a-f]{6}").unwrap();
-    static ref RE_PID: Regex = Regex::new(r"[0-9]{9}").unwrap();
+    static ref RE_HCL: Regex = Regex::new(r"^#[0-9,a-f]{6}$").unwrap();
+    static ref RE_PID: Regex = Regex::new(r"^[0-9]{9}$").unwrap();
     static ref EYE_COLORS: HashSet<&'static str> =
         ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
             .iter()
