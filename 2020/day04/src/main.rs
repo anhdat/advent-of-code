@@ -42,13 +42,15 @@ fn part_1(input: &str) {
 // Part 2
 
 fn is_valid_height(input: &str) -> bool {
-    let unit: &str = &input[(input.len() - 2)..];
-    let h: usize = input[..(input.len() - 2)].parse::<usize>().unwrap();;
-
-    match unit {
-        "cm" => (150..=193).contains(&h),
-        "in" => (59..=76).contains(&h),
-        _ => false,
+    if let Some(h) = input[..(input.len() - 2)].parse::<usize>().ok() {
+        let unit: &str = &input[(input.len() - 2)..];
+        match unit {
+            "cm" => (150..=193).contains(&h),
+            "in" => (59..=76).contains(&h),
+            _ => false,
+        }
+    } else {
+        false
     }
 }
 
@@ -60,9 +62,21 @@ fn is_valid_2(input: &str) -> bool {
         .collect();
 
     is_valid_height(&comps["hgt"])
-        && (1920..=2002).contains(&comps["byr"].parse::<i32>().unwrap_or(0))
-        && (2010..=2020).contains(&comps["iyr"].parse::<i32>().unwrap_or(0))
-        && (2020..=2030).contains(&comps["eyr"].parse::<i32>().unwrap_or(0))
+        && comps["byr"]
+            .parse::<i32>()
+            .ok()
+            .map(|x| (1920..=2002).contains(&x))
+            .unwrap_or(false)
+        && comps["iyr"]
+            .parse::<i32>()
+            .ok()
+            .map(|x| (2010..=2020).contains(&x))
+            .unwrap_or(false)
+        && comps["eyr"]
+            .parse::<i32>()
+            .ok()
+            .map(|x| (2020..=2030).contains(&x))
+            .unwrap_or(false)
         && RE_HCL.is_match(&comps["hcl"])
         && RE_PID.is_match(&comps["pid"])
         && EYE_COLORS.contains(&comps["ecl"])
