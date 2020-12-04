@@ -42,15 +42,16 @@ fn part_1(input: &str) {
 // Part 2
 
 fn is_valid_height(input: &str) -> bool {
-    if let Some(h) = input[..(input.len() - 2)].parse::<usize>().ok() {
-        let unit: &str = &input[(input.len() - 2)..];
-        match unit {
-            "cm" => (150..=193).contains(&h),
-            "in" => (59..=76).contains(&h),
-            _ => false,
+    match input[..(input.len() - 2)].parse::<usize>() {
+        Ok(h) => {
+            let unit: &str = &input[(input.len() - 2)..];
+            match unit {
+                "cm" => (150..=193).contains(&h),
+                "in" => (59..=76).contains(&h),
+                _ => false,
+            }
         }
-    } else {
-        false
+        _ => false,
     }
 }
 
