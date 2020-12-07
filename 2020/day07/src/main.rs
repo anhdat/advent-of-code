@@ -1,20 +1,20 @@
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::{HashMap, HashSet, VecDeque};
-// use trees::tr;
 
 lazy_static! {
     static ref RE_CHILDREN: Regex = Regex::new(r"(\d) ([\w ]*) bag[s]?").unwrap();
 }
 
-struct Child {
+#[derive(Clone, Debug)]
+struct Bag {
     amount: usize,
     color: String,
 }
 
 struct Rule {
     parent_color: String,
-    children: Vec<Child>,
+    children: Vec<Bag>,
 }
 
 fn parse_line(line: &str) -> Rule {
@@ -24,7 +24,7 @@ fn parse_line(line: &str) -> Rule {
     let chilren_raw = comps.next().unwrap().trim();
     let children = RE_CHILDREN
         .captures_iter(chilren_raw)
-        .map(|cap| Child {
+        .map(|cap| Bag {
             amount: cap[1].parse().unwrap(),
             color: cap[2].to_string(),
         })
@@ -76,9 +76,40 @@ fn part_1(input: &str) {
     println!("{:?}", visiteds.len() - 1);
 }
 
+fn bags_total(bag: &Bag, bags: &HashMap<String, Vec<Bag>>) -> usize {
+    if bag.amount == 0 {
+        0
+    } else {
+        let sub_total: usize = bags
+            .get(&bag.color)
+            .unwrap()
+            .iter()
+            .map(|b: &Bag| bags_total(b, bags))
+            .sum();
+        let total = bag.amount + (bag.amount * sub_total);
+
+        total
+    }
+}
+
+fn part_2(input: &str) {
+    let bags: HashMap<String, Vec<Bag>> = input
+        .lines()
+        .map(|l| parse_line(l))
+        .map(|r| (r.parent_color, r.children))
+        .collect();
+    let my_bag = Bag {
+        color: "shiny gold".to_string(),
+        amount: 1,
+    };
+
+    let total = bags_total(&my_bag, &bags) - 1;
+    println!("{}", total);
+}
+
 fn main() {
     let input = include_str!("../input");
     // let input = include_str!("../example");
     part_1(&input);
-    // part_2(&input);
+    part_2(&input);
 }
