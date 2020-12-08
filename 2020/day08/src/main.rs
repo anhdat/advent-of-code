@@ -1,4 +1,26 @@
 use std::collections::HashSet;
+use std::fmt;
+
+#[derive(Debug)]
+pub enum ApplicationError {
+    NegativeVectorIndexError,
+    ParseError,
+    InfiniteLoopError(isize),
+}
+
+impl std::error::Error for ApplicationError {}
+
+impl fmt::Display for ApplicationError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            ApplicationError::NegativeVectorIndexError => write!(f, "Negative Vector Index Error"),
+            ApplicationError::ParseError => write!(f, "Parse Error"),
+            ApplicationError::InfiniteLoopError(result) => {
+                write!(f, "Infinite Loop Error with last result: {}", result)
+            }
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 enum InsType {
@@ -18,22 +40,25 @@ fn parse_line(line: &str) -> InsType {
     }
 }
 
-fn add(u: usize, i: isize) -> Option<usize> {
+fn add(u: usize, i: isize) -> Result<usize, ApplicationError> {
     let r = u as isize + i;
     if r < 0 {
-        None
+        Err(ApplicationError::NegativeVectorIndexError)
     } else {
-        Some(r as usize)
+        Ok(r as usize)
     }
 }
 
 fn part_1(input: &str) {
     let instructions: Vec<InsType> = input.lines().map(|l| parse_line(l)).collect();
-    let (_, res) = execute(&instructions);
-    println!("part 1: {}", res);
+    let res = execute(&instructions);
+    match res {
+        Ok(val) => println!("part 1: {}", val),
+        Err(err) => eprintln!("part 1: {}", err),
+    }
 }
 
-fn execute(instructions: &Vec<InsType>) -> (bool, isize) {
+fn execute(instructions: &Vec<InsType>) -> Result<isize, ApplicationError> {
     let mut visiteds: HashSet<usize> = HashSet::new();
     let mut index: usize = 0;
     let mut acc: isize = 0;
@@ -44,11 +69,7 @@ fn execute(instructions: &Vec<InsType>) -> (bool, isize) {
         match ins {
             InsType::Nop(_) => {}
             InsType::Jump(val) => {
-                if let Some(_index) = add(index, *val) {
-                    index = _index;
-                } else {
-                    panic!("Negative index");
-                }
+                index = add(index, *val)?;
                 continue;
             }
             InsType::Acc(val) => acc += val,
@@ -56,29 +77,33 @@ fn execute(instructions: &Vec<InsType>) -> (bool, isize) {
         index += 1;
     }
     if index >= instructions.len() {
-        (true, acc)
+        Ok(acc)
     } else {
-        (false, acc)
+        Err(ApplicationError::InfiniteLoopError(acc))
     }
 }
 
 fn part_2(input: &str) {
     let instructions: Vec<InsType> = input.lines().map(|l| parse_line(l)).collect();
     for (index, ins) in instructions.iter().enumerate() {
-        let mut copy_instructions: Vec<InsType> = instructions.iter().cloned().collect();
+        let mut copied_instructions: Vec<InsType> = instructions.iter().cloned().collect();
         match ins {
             InsType::Nop(val) => {
-                copy_instructions[index] = InsType::Jump(*val);
+                copied_instructions[index] = InsType::Jump(*val);
             }
             InsType::Jump(val) => {
-                copy_instructions[index] = InsType::Nop(*val);
+                copied_instructions[index] = InsType::Nop(*val);
             }
             InsType::Acc(_) => {}
         }
-        let (succeeded, res) = execute(&copy_instructions);
-        if succeeded {
-            println!("part 2: {}", res);
-            break;
+        let res = execute(&copied_instructions);
+        match res {
+            Ok(val) => {
+                println!("part 2: {}", val);
+                break;
+            }
+            // Err(err) => eprintln!("part 2: {}", err),
+            Err(_) => {}
         }
     }
 }
