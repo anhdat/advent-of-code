@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use std::collections::HashSet;
 
 fn part_2(input: &str, total: isize) {
     let nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
