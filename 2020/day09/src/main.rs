@@ -1,3 +1,4 @@
+use itertools::Itertools;
 use std::collections::HashSet;
 
 fn part_2(input: &str, total: isize) {
@@ -22,29 +23,23 @@ fn part_2(input: &str, total: isize) {
 
 fn part_1(input: &str, preamble_size: usize) {
     let nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
-    let mut sums: Vec<isize> = vec![];
-    let mut current_pos = 0;
-
-    for i in current_pos..(current_pos + preamble_size) {
-        for j in (current_pos + 1)..(current_pos + preamble_size) {
-            sums.push(nums[i] + nums[j]);
-        }
-    }
 
     let mut invalid_num: Option<isize> = None;
 
+    let mut current_pos = 0;
     while (current_pos + preamble_size) < nums.len() {
         let next_num = nums[current_pos + preamble_size];
 
+        let sums: Vec<isize> = nums[current_pos..(current_pos + preamble_size)]
+            .iter()
+            .combinations(2)
+            .map(|xs| xs.into_iter().sum())
+            .collect();
         if !sums.contains(&next_num) {
             invalid_num = Some(next_num);
             break;
         }
 
-        for i in current_pos..(current_pos + preamble_size) {
-            sums.push(nums[i] + next_num);
-        }
-        sums.drain(..(preamble_size));
         current_pos += 1;
     }
 
