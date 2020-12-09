@@ -20,9 +20,7 @@ fn part_2(input: &str, total: isize) {
     println!("part 2: {}", min_num + max_num);
 }
 
-fn part_1(input: &str, preamble_size: usize) {
-    let nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
-
+fn find_invalid_num(nums: &Vec<isize>, preamble_size: &usize) -> Option<isize> {
     let mut invalid_num: Option<isize> = None;
 
     let mut current_pos = 0;
@@ -42,8 +40,14 @@ fn part_1(input: &str, preamble_size: usize) {
         current_pos += 1;
     }
 
-    if invalid_num.is_some() {
-        println!("part 1: {}", invalid_num.unwrap());
+    invalid_num
+}
+
+fn part_1(input: &str, preamble_size: usize) {
+    let nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
+
+    if let Some(invalid_num) = find_invalid_num(&nums, &preamble_size) {
+        println!("part 1: {}", invalid_num);
     } else {
         println!("part 1: list is valid");
     }
