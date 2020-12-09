@@ -20,7 +20,7 @@ fn part_2(input: &str, total: isize) {
     println!("part 2: {}", min_num + max_num);
 }
 
-fn part_1(input: &str, preamble_size: usize) -> Option<isize> {
+fn part_1(input: &str, preamble_size: usize) {
     let nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
     let mut sums: Vec<isize> = vec![];
     let mut current_pos = 0;
@@ -31,14 +31,17 @@ fn part_1(input: &str, preamble_size: usize) -> Option<isize> {
         }
     }
 
+    let mut invalid_num: Option<isize> = None;
+
     while (current_pos + preamble_size) < nums.len() {
         let sums_set: HashSet<isize> = sums.iter().cloned().collect();
         let next_num = nums[current_pos + preamble_size];
-        let is_valid = sums_set.contains(&next_num);
 
-        if !is_valid {
-            return Some(next_num);
+        if !sums_set.contains(&next_num) {
+            invalid_num = Some(next_num);
+            break;
         }
+
         for i in current_pos..(current_pos + preamble_size) {
             sums.push(nums[i] + next_num);
         }
@@ -46,7 +49,11 @@ fn part_1(input: &str, preamble_size: usize) -> Option<isize> {
         current_pos += 1;
     }
 
-    None
+    if invalid_num.is_some() {
+        println!("part 1: {}", invalid_num.unwrap());
+    } else {
+        println!("part 1: list is valid");
+    }
 }
 
 fn main() {
@@ -54,11 +61,7 @@ fn main() {
     // let input_example = include_str!("../example");
 
     let preamble_size = 25;
-    if let Some(invalid_num) = part_1(&input, preamble_size) {
-        println!("part 1: {}", invalid_num);
-    } else {
-        println!("part 1: list is valid");
-    }
+    part_1(&input, preamble_size);
 
     // const TOTAL_EXAMPLE: isize = 127;
     // part_2(&input_example, TOTAL_EXAMPLE);
