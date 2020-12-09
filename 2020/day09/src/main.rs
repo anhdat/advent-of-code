@@ -34,10 +34,9 @@ fn part_1(input: &str, preamble_size: usize) {
     let mut invalid_num: Option<isize> = None;
 
     while (current_pos + preamble_size) < nums.len() {
-        let sums_set: HashSet<isize> = sums.iter().cloned().collect();
         let next_num = nums[current_pos + preamble_size];
 
-        if !sums_set.contains(&next_num) {
+        if !sums.contains(&next_num) {
             invalid_num = Some(next_num);
             break;
         }
@@ -58,13 +57,16 @@ fn part_1(input: &str, preamble_size: usize) {
 
 fn main() {
     let input = include_str!("../input");
-    // let input_example = include_str!("../example");
+    let input_example = include_str!("../example");
+
+    let preamble_size_example = 5;
+    part_1(&input_example, preamble_size_example);
 
     let preamble_size = 25;
     part_1(&input, preamble_size);
 
-    // const TOTAL_EXAMPLE: isize = 127;
-    // part_2(&input_example, TOTAL_EXAMPLE);
+    const TOTAL_EXAMPLE: isize = 127;
+    part_2(&input_example, TOTAL_EXAMPLE);
 
     const TOTAL: isize = 375054920;
     part_2(&input, TOTAL);
