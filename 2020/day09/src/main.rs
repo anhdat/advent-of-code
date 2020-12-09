@@ -1,5 +1,25 @@
 use std::collections::HashSet;
 
+fn part_2(input: &str, total: isize) {
+    let nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
+    let mut min_pos = 0;
+    let mut max_pos = 1;
+    let mut sum = 0;
+    while sum != total {
+        sum = (min_pos..max_pos).map(|i| nums[i]).sum();
+        if sum < total {
+            max_pos += 1;
+        }
+        if sum > total {
+            min_pos += 1;
+        }
+    }
+    let min_num = (min_pos..max_pos).map(|i| nums[i]).min().unwrap();
+    let max_num = (min_pos..max_pos).map(|i| nums[i]).max().unwrap();
+
+    println!("part 2: {}", min_num + max_num);
+}
+
 fn part_1(input: &str, preamble_size: usize) -> Option<isize> {
     let nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
     let mut sums: Vec<isize> = vec![];
@@ -31,12 +51,18 @@ fn part_1(input: &str, preamble_size: usize) -> Option<isize> {
 
 fn main() {
     let input = include_str!("../input");
-    // let input = include_str!("../example");
+    // let input_example = include_str!("../example");
+
     let preamble_size = 25;
     if let Some(invalid_num) = part_1(&input, preamble_size) {
         println!("part 1: {}", invalid_num);
     } else {
         println!("part 1: list is valid");
     }
-    // part_2(&input);
+
+    // const TOTAL_EXAMPLE: isize = 127;
+    // part_2(&input_example, TOTAL_EXAMPLE);
+
+    const TOTAL: isize = 375054920;
+    part_2(&input, TOTAL);
 }
