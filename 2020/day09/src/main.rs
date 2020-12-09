@@ -4,13 +4,13 @@ fn part_2(input: &str, total: isize) {
     let nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
     let mut min_pos = 0;
     let mut max_pos = 1;
-    let mut sum = 0;
-    while sum != total {
-        sum = (min_pos..max_pos).map(|i| nums[i]).sum();
+    let mut sum = nums[min_pos];
+    while sum != total && max_pos < nums.len() {
         if sum < total {
+            sum += nums[max_pos];
             max_pos += 1;
-        }
-        if sum > total {
+        } else if sum > total {
+            sum -= nums[min_pos];
             min_pos += 1;
         }
     }
