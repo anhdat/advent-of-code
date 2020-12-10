@@ -1,27 +1,24 @@
 use std::collections::HashMap;
 
 fn count(nums: &Vec<isize>, current_index: usize, memory: &mut HashMap<usize, usize>) -> usize {
-    if memory.contains_key(&current_index) {
-        return *memory.get(&current_index).unwrap();
+    if let Some(total) = memory.get(&current_index) {
+        return *total;
     }
 
     if nums.len() - 1 == current_index {
-        memory.insert(current_index, 1);
         return 1;
     }
 
     let mut total = 0;
-
     for diff in 1..=3 {
         let next_num = nums[current_index] + diff;
-        if nums.contains(&next_num) {
-            let next_index = nums.iter().position(|&x| x == next_num).unwrap();
+        if let Some(next_index) = nums.iter().position(|&x| x == next_num) {
             total += count(nums, next_index, memory);
         }
     }
-
     memory.insert(current_index, total);
-    return total;
+
+    total
 }
 
 fn build_nums(input: &str) -> Vec<isize> {
