@@ -23,8 +23,8 @@ fn count(nums: &Vec<isize>, current_index: usize, memory: &mut HashMap<usize, us
 
 fn build_nums(input: &str) -> Vec<isize> {
     let mut nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
-    let max_num: isize = *nums.iter().clone().max().unwrap();
-    nums = [nums, vec![0 as isize, max_num + 3]].concat();
+    let max_num: isize = *nums.iter().max().unwrap();
+    nums = [nums, vec![0, max_num + 3]].concat();
     nums.sort();
 
     nums
