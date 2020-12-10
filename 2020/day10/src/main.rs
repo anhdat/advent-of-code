@@ -24,18 +24,24 @@ fn count(nums: &Vec<isize>, current_index: usize, memory: &mut HashMap<usize, us
     return total;
 }
 
-fn part_2(input: &str) {
+fn build_nums(input: &str) -> Vec<isize> {
     let mut nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
     let max_num: isize = *nums.iter().clone().max().unwrap();
     nums = [nums, vec![0 as isize, max_num + 3]].concat();
     nums.sort();
+
+    nums
+}
+
+fn part_2(input: &str) {
+    let nums = build_nums(input);
     let mut memory: HashMap<usize, usize> = HashMap::new();
     println!("{}", count(&nums, 0, &mut memory))
 }
 
 fn part_1(input: &str) {
-    let mut nums: Vec<isize> = input.lines().map(|l| l.parse::<isize>().unwrap()).collect();
-    nums.sort();
+    let nums = build_nums(input);
+
     let mut ones = 0;
     let mut twos = 0;
     let mut threes = 0;
@@ -52,16 +58,7 @@ fn part_1(input: &str) {
             _ => println!("not supported"),
         }
     }
-    // adding final threes for the device
-    // and another ones because both the inputs starts with 1
-    // so we don't have to alter the nums list
-    println!(
-        "{} {} {} {}",
-        ones + 1,
-        twos,
-        threes + 1,
-        (ones + 1) * (threes + 1)
-    )
+    println!("{} {} {} {}", ones, twos, threes, ones * threes)
 }
 
 fn main() {
