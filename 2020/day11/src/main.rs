@@ -123,8 +123,7 @@ fn calculate(input: &str, next_state_fn: &dyn Fn(usize, usize, &Vec<Vec<char>>) 
     let mut new_map: Vec<Vec<char>> = map.iter().cloned().collect();
     let mut last_occupied_count: usize = map
         .iter()
-        .cloned()
-        .map(|v| v.into_iter().filter(|&c| c == '#').count())
+        .map(|v| v.iter().filter(|c| **c == '#').count())
         .sum();
     let mut occupied_count: usize = 1;
     let mut iteration_count = 0;
@@ -138,8 +137,7 @@ fn calculate(input: &str, next_state_fn: &dyn Fn(usize, usize, &Vec<Vec<char>>) 
         }
         occupied_count = new_map
             .iter()
-            .cloned()
-            .map(|v| v.into_iter().filter(|&c| c == '#').count())
+            .map(|v| v.iter().filter(|c| **c == '#').count())
             .sum();
         map = new_map.iter().cloned().collect();
         // println!("");
