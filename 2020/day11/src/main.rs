@@ -1,3 +1,12 @@
+fn print_map(map: &Vec<Vec<char>>) {
+    for y in 0..(map.len()) {
+        for x in 0..(map[0].len()) {
+            print!("{}", map[y][x]);
+        }
+        print!("\n");
+    }
+}
+
 fn get_adjacent_indices(x: usize, y: usize, m: usize, n: usize) -> Vec<(usize, usize)> {
     let directions: Vec<(isize, isize)> = vec![
         (-1, -1),
@@ -33,8 +42,7 @@ fn next_state(x: usize, y: usize, map: &Vec<Vec<char>>) -> char {
         '#' => {
             let occupieds_count = neighbors
                 .into_iter()
-                .map(|(x, y)| map[y][x] == '#')
-                .filter(|&x| x)
+                .filter(|(x, y)| map[*y][*x] == '#')
                 .count();
             if occupieds_count >= 4 {
                 'L'
@@ -46,24 +54,72 @@ fn next_state(x: usize, y: usize, map: &Vec<Vec<char>>) -> char {
     }
 }
 
-fn print_map(map: &Vec<Vec<char>>) {
-    for y in 0..(map.len()) {
-        for x in 0..(map[0].len()) {
-            print!("{}", map[y][x]);
+fn seats_in_directions(x: usize, y: usize, map: &Vec<Vec<char>>) -> Vec<char> {
+    let m = map[0].len();
+    let n = map.len();
+
+    let directions: Vec<(isize, isize)> = vec![
+        (-1, -1),
+        (0, -1),
+        (1, -1),
+        (-1, 0),
+        (1, 0),
+        (-1, 1),
+        (0, 1),
+        (1, 1),
+    ];
+    let adjacent_seats: Vec<char> = directions
+        .iter()
+        .map(|d| {
+            let mut xx = x as isize + d.0;
+            let mut yy = y as isize + d.1;
+            loop {
+                if xx < 0 || xx >= m as isize || yy < 0 || yy >= n as isize {
+                    return '.';
+                }
+                let current = map[yy as usize][xx as usize];
+                if current == 'L' || current == '#' {
+                    return current;
+                }
+                xx += d.0;
+                yy += d.1;
+            }
+        })
+        .collect();
+
+    adjacent_seats
+}
+
+fn next_state_2(x: usize, y: usize, map: &Vec<Vec<char>>) -> char {
+    let current_state = map[y][x];
+    let neighbors: Vec<char> = seats_in_directions(x, y, &map);
+    match current_state {
+        'L' => {
+            if neighbors.into_iter().any(|x| x == '#') {
+                current_state
+            } else {
+                '#'
+            }
         }
-        print!("\n");
+        '#' => {
+            let occupieds_count = neighbors.into_iter().filter(|&x| x == '#').count();
+            if occupieds_count >= 5 {
+                'L'
+            } else {
+                current_state
+            }
+        }
+        _ => current_state,
     }
 }
 
-fn part_1(input: &str) {
+fn calculate(input: &str, next_state_fn: &dyn Fn(usize, usize, &Vec<Vec<char>>) -> char) {
     let mut map: Vec<Vec<char>> = input
         .lines()
         .map(|line| line.trim())
         .filter(|line| !line.is_empty())
         .map(|l| l.chars().collect())
         .collect();
-    // println!("{:?}", map);
-    print_map(&map);
     let mut new_map: Vec<Vec<char>> = map.iter().cloned().collect();
     let mut last_occupied_count: usize = map
         .iter()
@@ -77,7 +133,7 @@ fn part_1(input: &str) {
         last_occupied_count = occupied_count;
         for y in 0..(map.len()) {
             for x in 0..(map[0].len()) {
-                new_map[y][x] = next_state(x, y, &map);
+                new_map[y][x] = next_state_fn(x, y, &map);
             }
         }
         occupied_count = new_map
@@ -86,14 +142,25 @@ fn part_1(input: &str) {
             .map(|v| v.into_iter().filter(|&c| c == '#').count())
             .sum();
         map = new_map.iter().cloned().collect();
+        // println!("");
+        // print!("{}[2J", 27 as char);
+        // print_map(&map);
         iteration_count += 1;
     }
     println!("count: {}", occupied_count);
+}
+
+fn part_1(input: &str) {
+    calculate(input, &next_state)
+}
+
+fn part_2(input: &str) {
+    calculate(input, &next_state_2)
 }
 
 fn main() {
     let input = include_str!("../input");
     // let input = include_str!("../example");
     part_1(&input);
-    // part_2(&input);
+    part_2(&input);
 }
