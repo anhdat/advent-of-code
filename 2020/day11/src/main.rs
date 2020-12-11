@@ -140,9 +140,9 @@ fn calculate(input: &str, next_state_fn: &dyn Fn(usize, usize, &Vec<Vec<char>>) 
             .map(|v| v.iter().filter(|c| **c == '#').count())
             .sum();
         map = new_map.iter().cloned().collect();
-        // println!("");
-        // print!("{}[2J", 27 as char);
-        // print_map(&map);
+        println!("");
+        print!("{}[2J", 27 as char);
+        print_map(&map);
         iteration_count += 1;
     }
     println!("count: {}", occupied_count);
