@@ -97,9 +97,51 @@ fn part_1(input: &str) {
     println!("{:?}, {}", ship, ship.x.abs() + ship.y.abs());
 }
 
+fn turn_waypoint(point: (isize, isize), val: isize) -> (isize, isize) {
+    let angle = (val as f32).to_radians();
+    let x = (angle.sin() * point.1 as f32 + angle.cos() * point.0 as f32).round() as isize;
+    let y = (angle.cos() * point.1 as f32 - angle.sin() * point.0 as f32).round() as isize;
+    (x, y)
+}
+
+fn part_2(input: &str) {
+    let instructions: Vec<Instruction> = input.lines().map(|l| parse_line(l)).collect();
+    let mut ship = Ship {
+        x: 0,
+        y: 0,
+        direction: Direction::E,
+    };
+    let mut wx = 10;
+    let mut wy = 1;
+    for ins in instructions {
+        match ins {
+            Instruction::N(val) => wy += val,
+            Instruction::S(val) => wy -= val,
+            Instruction::E(val) => wx += val,
+            Instruction::W(val) => wx -= val,
+            Instruction::F(val) => {
+                ship.y += val * wy;
+                ship.x += val * wx;
+            }
+            Instruction::R(val) => {
+                let (x, y) = turn_waypoint((wx, wy), val);
+                wx = x;
+                wy = y;
+            }
+            Instruction::L(val) => {
+                let (x, y) = turn_waypoint((wx, wy), -val);
+                wx = x;
+                wy = y;
+            }
+        }
+        println!("{:?}, {}", ship, ship.x.abs() + ship.y.abs());
+    }
+    println!("{:?}, {}", ship, ship.x.abs() + ship.y.abs());
+}
+
 fn main() {
     let input = include_str!("../input");
     // let input = include_str!("../example");
-    part_1(&input);
-    // part_2(&input);
+    // part_1(&input);
+    part_2(&input);
 }
