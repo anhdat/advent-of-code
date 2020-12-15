@@ -1,33 +1,43 @@
-fn part_1(input: &str) {
+use std::collections::HashMap;
+
+fn calculate(input: &str, size: usize) -> usize {
     let mut nums: Vec<usize> = input
         .split(",")
         .map(|a| a.parse::<usize>().unwrap())
         .collect();
-    while nums.len() < 2020 {
-        let mut steps = 1;
-        let mut has_seen = false;
-        let last_num = nums[nums.len() - 1];
 
-        for (_, &n) in nums[..(nums.len() - 1)].iter().rev().enumerate() {
-            if n == last_num {
-                has_seen = true;
-                break;
+    let mut seens: HashMap<usize, usize> = nums
+        .iter()
+        .cloned()
+        .enumerate()
+        .map(|(i, v)| (v, i))
+        .collect();
+
+    let mut i = nums.len() - 1;
+    while i < size - 1 {
+        let num = nums[i];
+        let has_seen = seens.get(&num);
+        match has_seen {
+            Some(seen_index) => {
+                nums.push(i - seen_index);
             }
-            steps += 1;
+            None => {
+                nums.push(0);
+            }
         }
-        if !has_seen {
-            steps = 0;
-        }
-        nums.push(steps);
+        seens.insert(num, i);
+        i += 1;
     }
-    println!("part 1: {}", nums[nums.len() - 1]);
+    let last_num = nums[nums.len() - 1];
+    println!("last_num: {}", last_num);
+
+    last_num
 }
 
 fn main() {
-    // println!("Hello, world!");
-    part_1("0,3,6");
-    part_1("1,3,2");
-    part_1("2,1,3");
-    part_1("3,1,2");
-    part_1("6,3,15,13,1,0");
+    assert_eq!(calculate("0,3,6", 10), 0);
+    assert_eq!(calculate("2,1,3", 2020), 10);
+
+    calculate("6,3,15,13,1,0", 2020);
+    calculate("6,3,15,13,1,0", 30000000);
 }
