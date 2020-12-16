@@ -3,13 +3,19 @@ use regex::Regex;
 use std::ops::RangeInclusive;
 
 lazy_static! {
-    static ref RE_FIELD: Regex = Regex::new(r"([\d\w]+): (\d+)-(\d+) or (\d+)-(\d+)").unwrap();
+    static ref RE_FIELD: Regex = Regex::new(r"([\w\s]+): (\d+)-(\d+) or (\d+)-(\d+)").unwrap();
 }
 
 #[derive(Debug)]
 struct Field {
     name: String,
     ranges: Vec<std::ops::RangeInclusive<usize>>,
+}
+
+impl Field {
+    fn contains(&self, num: &usize) -> bool {
+        self.ranges.iter().any(|range| range.contains(num))
+    }
 }
 
 #[derive(Debug)]
@@ -44,7 +50,7 @@ fn parse_document(input: &str) -> (std::vec::Vec<Field>, Ticket, std::vec::Vec<T
             }
         })
         .collect();
-    // println!("{:?}", fields);
+    // println!("{:#?}", fields);
 
     let mut p2 = paragraphs.next().unwrap().lines();
     p2.next();
@@ -80,12 +86,75 @@ fn part_1(input: &str) {
         })
         .collect();
 
-    println!("{:?}", scan_results.iter().sum::<usize>());
+    println!("part 1: {:?}", scan_results.iter().sum::<usize>());
+}
+
+fn part_2(input: &str) {
+    let (fields, my_ticket, nearbys) = parse_document(&input);
+    let all_ranges: Vec<&RangeInclusive<usize>> = fields
+        .iter()
+        .flat_map(|f| f.ranges.iter().collect::<Vec<&RangeInclusive<usize>>>())
+        .collect();
+    let valid_tickets: Vec<&Ticket> = nearbys
+        .iter()
+        .filter(|t| {
+            t.nums
+                .iter()
+                .all(|num| all_ranges.iter().any(|range| range.contains(num)))
+        })
+        .collect();
+    // println!("{:?}", valid_tickets);
+
+    let possible_positions = (0..(fields.len())).collect::<Vec<usize>>();
+    let mut records: Vec<Vec<usize>> = fields
+        .iter()
+        .map(|_| possible_positions.iter().cloned().collect())
+        .collect();
+
+    // Filter out not possible positions
+    for ticket in &valid_tickets {
+        for (i, current_num) in ticket.nums.iter().enumerate() {
+            for (f_index, f) in fields.iter().enumerate() {
+                if !f.contains(&current_num) {
+                    records[f_index].retain(|&x| x != i);
+                }
+            }
+        }
+    }
+    // println!("{:#?}", records);
+
+    // Narrow the possible positions with certain positions (the ones have only one possibility)
+    loop {
+        for i in 0..records.len() {
+            let v = &records[i];
+            if v.len() == 1 {
+                let current_num = v[0];
+                for j in 0..records.len() {
+                    if i == j {
+                        continue;
+                    }
+                    records[j].retain(|&x| x != current_num);
+                }
+            }
+        }
+        if records.iter().all(|ps| ps.iter().count() == 1) {
+            break;
+        }
+        // println!("{:?}", records);
+    }
+    println!("result: {:?}", records);
+    let result = fields
+        .iter()
+        .enumerate()
+        .filter(|(_, f)| f.name.starts_with("departure"))
+        .map(|(i, _)| my_ticket.nums[records[i][0]])
+        .fold(1, |acc, num| acc * num);
+    println!("part 2: {}", result);
 }
 
 fn main() {
     let input = include_str!("../input");
     // let input = include_str!("../example");
     part_1(&input);
-    // part_2(&input);
+    part_2(&input);
 }
