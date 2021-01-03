@@ -23,19 +23,19 @@ fn parse_input(input: &str) -> Vec<Food> {
                 .get(1)
                 .unwrap()
                 .as_str()
-                .split(" ")
+                .split(' ')
                 .map(|s| s.trim())
+                .filter(|s| !s.is_empty())
                 .map(|s| s.to_string())
-                .filter(|s| s.len() > 0)
                 .collect();
             let allergens = comps
                 .get(2)
                 .unwrap()
                 .as_str()
-                .split(",")
+                .split(',')
                 .map(|s| s.trim())
+                .filter(|s| !s.is_empty())
                 .map(|s| s.to_string())
-                .filter(|s| s.len() > 0)
                 .collect();
             Food {
                 ingredients,
@@ -64,10 +64,7 @@ fn part_1(input: &str) {
         }
     }
 
-    let allergenic_ingredients: HashSet<&String> = known_allergens
-        .values()
-        .flat_map(|ingredients| ingredients)
-        .collect();
+    let allergenic_ingredients: HashSet<&String> = known_allergens.values().flatten().collect();
 
     println!(
         "{}",
