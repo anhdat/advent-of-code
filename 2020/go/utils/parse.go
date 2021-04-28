@@ -35,6 +35,18 @@ func ToInts(input string, sep string) []int {
 	return r
 }
 
+func ToGrid(input string, empty interface{}) *Grid {
+	grid := NewGrid(empty)
+
+	for y, line := range strings.Split(input, "\n") {
+		for x, rune := range line {
+			grid.Set(x, y, rune)
+		}
+	}
+
+	return grid
+}
+
 func ParseToStruct(re *regexp.Regexp, input string, target interface{}) error {
 	m := re.FindStringSubmatch(input)
 	if m == nil {
