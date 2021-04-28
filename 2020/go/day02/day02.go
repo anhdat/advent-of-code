@@ -28,3 +28,24 @@ func Part1(input string) int {
 	}
 	return valid
 }
+
+func Part2(input string) int {
+	type Line struct {
+		Pos1     int
+		Pos2     int
+		Char     byte
+		Password string
+	}
+	lines := utils.ToStrings(input)
+	re := regexp.MustCompile(`(?P<Pos1>\d+)-(?P<Pos2>\d+) (?P<Char>.): (?P<Password>.*)`)
+	valid := 0
+	for _, line := range lines {
+		var match Line
+		err := utils.ParseToStruct(re, line, &match)
+		utils.PanicOnErr(err)
+		if (match.Password[match.Pos1-1] == match.Char) != (match.Password[match.Pos2-1] == match.Char) {
+			valid++
+		}
+	}
+	return valid
+}

@@ -46,14 +46,21 @@ func ParseToStruct(re *regexp.Regexp, input string, target interface{}) error {
 			continue
 		}
 		var field reflect.Value = reflect.ValueOf(target).Elem().FieldByName(name)
-		if field.Kind() == reflect.String {
+
+		kind := field.Kind()
+		switch kind {
+		case reflect.String:
 			field.SetString(m[i])
-		} else if field.Kind() == reflect.Int {
+		case reflect.Int:
 			v, err := strconv.Atoi(m[i])
 			if err != nil {
 				return err
 			}
 			field.SetInt(int64(v))
+		case reflect.Uint8:
+			field.SetUint(uint64(m[i][0]))
+		default:
+			panic(fmt.Sprintf("unknown kind: %s", kind))
 		}
 	}
 	return nil
