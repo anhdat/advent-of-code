@@ -16,6 +16,7 @@ func main() {
 	switch day {
 	case 1:
 		fmt.Printf("Part 1: %d\n", day01.Part1(input))
+		fmt.Printf("Part 2: %d\n", day01.Part2(input))
 	default:
 		panic(fmt.Errorf("no such day: %d", day))
 	}
