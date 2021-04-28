@@ -24,7 +24,7 @@ func main() {
 		fmt.Printf("Part 2: %d\n", day02.Part2(input))
 	case 3:
 		fmt.Printf("Part 1: %d\n", day03.Part1(input))
-		// fmt.Printf("Part 2: %d\n", day02.Part2(input))
+		fmt.Printf("Part 2: %d\n", day03.Part2(input))
 	default:
 		panic(fmt.Errorf("no such day: %d", day))
 	}
