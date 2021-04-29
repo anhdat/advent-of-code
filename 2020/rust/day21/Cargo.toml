@@ -1,5 +1,5 @@
 [package]
-name = "day20"
+name = "day21"
 version = "0.1.0"
 authors = ["Dat Truong <mr.anhdat@gmail.com>"]
 edition = "2018"
@@ -9,4 +9,3 @@ edition = "2018"
 [dependencies]
 regex = ""
 lazy_static = ""
-itertools = ""
