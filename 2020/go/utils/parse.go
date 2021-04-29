@@ -15,8 +15,12 @@ func MustAtoi(s string) int {
 }
 
 func ToStrings(input string) []string {
+	return ToStringsWithSep(input, "\n")
+}
+
+func ToStringsWithSep(input, sep string) []string {
 	var r []string
-	for _, line := range strings.Split(input, "\n") {
+	for _, line := range strings.Split(input, sep) {
 		if len(line) == 0 {
 			continue
 		}
