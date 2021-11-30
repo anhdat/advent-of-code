@@ -114,13 +114,11 @@ in1: Set[int] = set(data(1, int))
 
 
 def day1_1(nums):
-    return math.prod(nums.intersection({2020 - x for x in nums}))
+    return math.prod(nums & {2020 - x for x in nums})
 
 
 def day1_2(nums: Set[int]):
-    return math.prod(
-        nums.intersection({2020 - x - y for (x, y) in permutations(nums, 2)})
-    )
+    return math.prod(nums & {2020 - x - y for (x, y) in permutations(nums, 2)})
 
 
 do(1, 800139, 59885340)
