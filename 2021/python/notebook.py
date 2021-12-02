@@ -123,3 +123,46 @@ def day1_2(nums: list[int]):
 
 do(1, 1374, 1418)
 # %%
+
+Command = tuple[str, int]
+
+
+def parse_command(line: str) -> Command:
+    (direction, amount) = line.split()
+    return (direction, int(amount))
+
+
+in2: list[Command] = data(2, parse_command)
+
+
+def day2_1(commands: list[Command]):
+    x = 0
+    z = 0
+    for c in commands:
+        if c[0] == "forward":
+            x += c[1]
+        elif c[0] == "down":
+            z += c[1]
+        elif c[0] == "up":
+            z -= c[1]
+
+    return x * z
+
+
+def day2_2(commands: list[Command]):
+    x = 0
+    z = 0
+    aim = 0
+    for c in commands:
+        if c[0] == "forward":
+            x += c[1]
+            z += aim * c[1]
+        elif c[0] == "down":
+            aim += c[1]
+        elif c[0] == "up":
+            aim -= c[1]
+
+    return x * z
+
+
+do(2, 2073315, 1840311528)
