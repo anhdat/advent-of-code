@@ -139,12 +139,13 @@ def day2_1(commands: list[Command]):
     x = 0
     z = 0
     for c in commands:
-        if c[0] == "forward":
-            x += c[1]
-        elif c[0] == "down":
-            z += c[1]
-        elif c[0] == "up":
-            z -= c[1]
+        match c[0]:
+            case "forward":
+                x += c[1]
+            case "down":
+                z += c[1]
+            case "up":
+                z -= c[1]
 
     return x * z
 
@@ -154,13 +155,14 @@ def day2_2(commands: list[Command]):
     z = 0
     aim = 0
     for c in commands:
-        if c[0] == "forward":
-            x += c[1]
-            z += aim * c[1]
-        elif c[0] == "down":
-            aim += c[1]
-        elif c[0] == "up":
-            aim -= c[1]
+        match c[0]:
+            case "forward":
+                x += c[1]
+                z += aim * c[1]
+            case "down":
+                aim += c[1]
+            case "up":
+                aim -= c[1]
 
     return x * z
 
