@@ -187,9 +187,9 @@ lines = """00100
 01010""".splitlines()
 
 def day3_1(lines: list[str]):
-    mcs = [Counter(g).most_common(2) for g in zip(*lines)]
-    gamma = [c[0][0] for c in mcs]
-    epsilon = [c[1][0] for c in mcs]
+    count_zeros = [g.count("0") > len(lines)/2 for g in zip(*lines)]
+    gamma = ["0" if c else "1" for c in count_zeros]
+    epsilon = ["1" if c else "0" for c in count_zeros]
     return int("".join(gamma), 2) * int("".join(epsilon), 2)
 
 assert day3_1(lines) == 198
