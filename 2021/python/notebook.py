@@ -168,3 +168,65 @@ def day2_2(commands: list[Command]):
 
 
 do(2, 2073315, 1840311528)
+
+# %%
+in3: list[str] = data(3)
+
+lines = """00100
+11110
+10110
+10111
+10101
+01111
+00111
+11100
+10000
+11001
+00010
+01010""".splitlines()
+
+def day3_1(lines: list[str]):
+    gamma = []
+    epsilon = []
+    for g in zip(*lines):
+        mcs = Counter(g).most_common(2)
+        gamma.append(mcs[0][0])
+        epsilon.append(mcs[1][0])
+    return int("".join(gamma), 2) * int("".join(epsilon), 2)
+
+assert day3_1(lines) == 198
+
+# %%
+
+def find_oxygen(lines):
+    current_index = 0
+    while len(lines)>1:
+        chars = [l[current_index] for l in lines]
+        mcs = Counter(chars).most_common(2)
+        if mcs[0][1] == mcs[1][1]:
+            mc_char = '1'
+        else:
+            mc_char = mcs[0][0]
+        lines = [l for l in lines if l[current_index] == mc_char]
+        current_index += 1
+    return lines[0]
+
+def find_co2(lines):
+    current_index = 0
+    while len(lines)>1:
+        chars = [l[current_index] for l in lines]
+        mcs = Counter(chars).most_common(2)
+        if mcs[0][1] == mcs[1][1]:
+            mc_char = '0'
+        else:
+            mc_char = mcs[1][0]
+        lines = [l for l in lines if l[current_index] == mc_char]
+        current_index += 1
+    return lines[0]
+
+assert find_oxygen(lines) == '10111'
+assert find_co2(lines) == '01010'
+def day3_2(lines: list[str]):
+    return int(find_oxygen(lines), 2) * int(find_co2(lines), 2)
+
+do(3, 4001724)
