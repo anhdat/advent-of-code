@@ -170,6 +170,7 @@ def day2_2(commands: list[Command]):
 do(2, 2073315, 1840311528)
 
 # %%
+# Day 3 part 1
 in3: list[str] = data(3)
 
 lines = """00100
@@ -186,47 +187,35 @@ lines = """00100
 01010""".splitlines()
 
 def day3_1(lines: list[str]):
-    gamma = []
-    epsilon = []
-    for g in zip(*lines):
-        mcs = Counter(g).most_common(2)
-        gamma.append(mcs[0][0])
-        epsilon.append(mcs[1][0])
+    mcs = [Counter(g).most_common(2) for g in zip(*lines)]
+    gamma = [c[0][0] for c in mcs]
+    epsilon = [c[1][0] for c in mcs]
     return int("".join(gamma), 2) * int("".join(epsilon), 2)
 
 assert day3_1(lines) == 198
 
 # %%
+# Day 3 part 2
 
-def find_oxygen(lines):
+def find_life_supp_rating(lines, most_common=True):
     current_index = 0
     while len(lines)>1:
         chars = [l[current_index] for l in lines]
         mcs = Counter(chars).most_common(2)
         if mcs[0][1] == mcs[1][1]:
-            mc_char = '1'
+            c_char = '1' if most_common else '0'
         else:
-            mc_char = mcs[0][0]
-        lines = [l for l in lines if l[current_index] == mc_char]
+            c_char = mcs[0][0] if most_common else mcs[1][0]
+        lines = [l for l in lines if l[current_index] == c_char]
         current_index += 1
     return lines[0]
 
-def find_co2(lines):
-    current_index = 0
-    while len(lines)>1:
-        chars = [l[current_index] for l in lines]
-        mcs = Counter(chars).most_common(2)
-        if mcs[0][1] == mcs[1][1]:
-            mc_char = '0'
-        else:
-            mc_char = mcs[1][0]
-        lines = [l for l in lines if l[current_index] == mc_char]
-        current_index += 1
-    return lines[0]
 
-assert find_oxygen(lines) == '10111'
-assert find_co2(lines) == '01010'
+
+assert find_life_supp_rating(lines) == '10111'
+assert find_life_supp_rating(lines, most_common=False) == '01010'
+
 def day3_2(lines: list[str]):
-    return int(find_oxygen(lines), 2) * int(find_co2(lines), 2)
+    return int(find_life_supp_rating(lines), 2) * int(find_life_supp_rating(lines, most_common=False), 2)
 
-do(3, 4001724)
+do(3, 4001724, 587895)
