@@ -170,7 +170,7 @@ def day2_2(commands: list[Command]):
 do(2, 2073315, 1840311528)
 
 # %%
-# Day 3 part 1
+# Day 3
 in3: list[str] = data(3)
 
 lines = """00100
@@ -194,9 +194,6 @@ def day3_1(lines: list[str]):
 
 assert day3_1(lines) == 198
 
-# %%
-# Day 3 part 2
-
 def find_life_supp_rating(lines, most_common=True):
     current_index = 0
     while len(lines)>1:
@@ -209,7 +206,6 @@ def find_life_supp_rating(lines, most_common=True):
         lines = [l for l in lines if l[current_index] == c_char]
         current_index += 1
     return lines[0]
-
 
 
 assert find_life_supp_rating(lines) == '10111'
