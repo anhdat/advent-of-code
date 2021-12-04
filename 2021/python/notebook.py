@@ -215,3 +215,105 @@ def day3_2(lines: list[str]):
     return int(find_life_supp_rating(lines), 2) * int(find_life_supp_rating(lines, most_common=False), 2)
 
 do(3, 4001724, 587895)
+
+# %%
+# Day 4
+
+Ticket = list[list[int]]
+
+
+class BingoGame:
+    def __init__(self) -> None:
+        self.draws = []
+        self.tickets = []
+
+    @classmethod
+    def from_input(cls, sections):
+        game = BingoGame()
+        game.draws = [int(num) for num in sections[0].split(",")]
+        game.tickets = [
+            [[int(num) for num in line.split()] for line in section.splitlines()]
+            for section in sections[1:]
+        ]
+        return game
+
+
+bingo_test = """7,4,9,5,11,17,23,2,0,14,21,24,10,16,13,6,15,25,12,22,18,20,8,19,3,26,1
+
+22 13 17 11  0
+ 8  2 23  4 24
+21  9 14 16  7
+ 6 10  3 18  5
+ 1 12 20 15 19
+
+ 3 15  0  2 22
+ 9 18 13 17  5
+19  8  7 25 23
+20 11 10 24  4
+14 21 16 12  6
+
+14 21 17 24  4
+10 16 15  9 19
+18  8 23 26 20
+22 11 13  6  5
+ 2  0 12  3  7""".split(
+    "\n\n"
+)
+bingo_test
+test_in4 = BingoGame.from_input(bingo_test)
+test_in4
+
+
+def day4_1(game: BingoGame) -> int:
+    sets: list[tuple[set[int], int]] = []
+    for i, ticket in enumerate(game.tickets):
+        for row in ticket:
+            sets.append((set(row), i))
+        for col in range(len(ticket[0])):
+            sets.append(({row[col] for row in ticket}, i))
+
+    current_draws = set()
+    remaining_draws = game.draws
+    while True:
+        last_draw = remaining_draws[0]
+        remaining_draws = remaining_draws[1:]
+        current_draws.add(last_draw)
+        for (s, i) in sets:
+            if len(s.intersection(current_draws)) == 5:
+                return sum(set(flatten(game.tickets[i])) - current_draws) * last_draw
+
+
+assert day4_1(test_in4) == 4512
+
+in4 = BingoGame.from_input(data(4, sep="\n\n"))
+
+
+def day4_2(game: BingoGame) -> int:
+    sets: list[tuple[set[int], int]] = []
+    for i, ticket in enumerate(game.tickets):
+        for row in ticket:
+            sets.append((set(row), i))
+        for col in range(len(ticket[0])):
+            sets.append(({row[col] for row in ticket}, i))
+
+    current_draws = set()
+    remaining_draws = game.draws
+    winning_tickets = []
+    while len(winning_tickets) < len(game.tickets):
+        last_draw = remaining_draws[0]
+        remaining_draws = remaining_draws[1:]
+        current_draws.add(last_draw)
+
+        for (s, i) in sets:
+            if i in winning_tickets:
+                continue
+
+            if len(s.intersection(current_draws)) == 5:
+                winning_tickets.append(i)
+                if len(winning_tickets) == len(game.tickets):
+                    return (
+                        sum(set(flatten(game.tickets[i])) - current_draws) * last_draw
+                    )
+
+
+do(4, 74320, 17884)
