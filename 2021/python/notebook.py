@@ -231,10 +231,6 @@ Ticket = list[list[int]]
 
 
 class BingoGame:
-    def __init__(self) -> None:
-        self.draws = []
-        self.tickets = []
-
     @classmethod
     def from_input(cls, sections):
         game = BingoGame()
@@ -281,10 +277,9 @@ def day4_1(game: BingoGame) -> int:
             sets.append(({row[col] for row in ticket}, i))
 
     current_draws = set()
-    remaining_draws = game.draws
+    remaining_draws = game.draws.copy()
     while True:
-        last_draw = remaining_draws[0]
-        remaining_draws = remaining_draws[1:]
+        last_draw = remaining_draws.pop(0)
         current_draws.add(last_draw)
         for (s, i) in sets:
             if len(s.intersection(current_draws)) == 5:
@@ -292,8 +287,6 @@ def day4_1(game: BingoGame) -> int:
 
 
 assert day4_1(test_in4) == 4512
-
-in4 = BingoGame.from_input(data(4, sep="\n\n"))
 
 
 def day4_2(game: BingoGame) -> int:
@@ -305,11 +298,10 @@ def day4_2(game: BingoGame) -> int:
             sets.append(({row[col] for row in ticket}, i))
 
     current_draws = set()
-    remaining_draws = game.draws
+    remaining_draws = game.draws.copy()
     winning_tickets = []
     while len(winning_tickets) < len(game.tickets):
-        last_draw = remaining_draws[0]
-        remaining_draws = remaining_draws[1:]
+        last_draw = remaining_draws.pop(0)
         current_draws.add(last_draw)
 
         for (s, i) in sets:
@@ -324,4 +316,5 @@ def day4_2(game: BingoGame) -> int:
                     )
 
 
+in4 = BingoGame.from_input(data(4, sep="\n\n"))
 do(4, 74320, 17884)
