@@ -4,6 +4,7 @@ from collections import Counter, defaultdict, namedtuple, deque
 from itertools import permutations, combinations, product, chain
 from functools import lru_cache
 from typing import Dict, Tuple, Set, List, Iterator, Optional, Union, Iterable
+from dataclasses import dataclass
 
 import operator
 import math
@@ -186,21 +187,24 @@ lines = """00100
 00010
 01010""".splitlines()
 
+
 def day3_1(lines: list[str]):
-    count_zeros = [g.count("0") > len(lines)/2 for g in zip(*lines)]
+    count_zeros = [g.count("0") > len(lines) / 2 for g in zip(*lines)]
     gamma = ["0" if c else "1" for c in count_zeros]
     epsilon = ["1" if c else "0" for c in count_zeros]
     return int("".join(gamma), 2) * int("".join(epsilon), 2)
 
+
 assert day3_1(lines) == 198
+
 
 def find_life_supp_rating(lines, most_common=True):
     current_index = 0
-    while len(lines)>1:
+    while len(lines) > 1:
         chars = [l[current_index] for l in lines]
         mcs = Counter(chars).most_common(2)
         if mcs[0][1] == mcs[1][1]:
-            c_char = '1' if most_common else '0'
+            c_char = "1" if most_common else "0"
         else:
             c_char = mcs[0][0] if most_common else mcs[1][0]
         lines = [l for l in lines if l[current_index] == c_char]
@@ -208,11 +212,15 @@ def find_life_supp_rating(lines, most_common=True):
     return lines[0]
 
 
-assert find_life_supp_rating(lines) == '10111'
-assert find_life_supp_rating(lines, most_common=False) == '01010'
+assert find_life_supp_rating(lines) == "10111"
+assert find_life_supp_rating(lines, most_common=False) == "01010"
+
 
 def day3_2(lines: list[str]):
-    return int(find_life_supp_rating(lines), 2) * int(find_life_supp_rating(lines, most_common=False), 2)
+    return int(find_life_supp_rating(lines), 2) * int(
+        find_life_supp_rating(lines, most_common=False), 2
+    )
+
 
 do(3, 4001724, 587895)
 
