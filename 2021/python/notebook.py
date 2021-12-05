@@ -4,6 +4,7 @@ from collections import Counter, defaultdict, namedtuple, deque
 from itertools import permutations, combinations, product, chain
 from functools import lru_cache
 from typing import Dict, Tuple, Set, List, Iterator, Optional, Union, Iterable
+from typing import NamedTuple
 from dataclasses import dataclass
 
 import operator
@@ -318,3 +319,69 @@ def day4_2(game: BingoGame) -> int:
 
 in4 = BingoGame.from_input(data(4, sep="\n\n"))
 do(4, 74320, 17884)
+
+# %%
+Point = NamedTuple("Point", x=int, y=int)
+Line = tuple[Point, Point]
+
+
+def parse_line(line: str) -> Line:
+    a, b, c, d = ints(line)
+    return (Point(a, b), Point(c, d))
+
+
+in5: list[Line] = data(5, parse_line)
+
+
+def day5_1(lines: list[Line]):
+    points: list[Point] = []
+    for (p1, p2) in lines:
+        if p1.x == p2.x or p1.y == p2.y:
+            # since 2 points have the same x or y
+            # the square becomes a line
+            points += [
+                (x, y)
+                for x in range(min(p1.x, p2.x), max(p1.x, p2.x) + 1)
+                for y in range(min(p1.y, p2.y), max(p1.y, p2.y) + 1)
+            ]
+    return quantify(Counter(points).values(), lambda v: v > 1)
+
+
+test_in5 = """0,9 -> 5,9
+8,0 -> 0,8
+9,4 -> 3,4
+2,2 -> 2,1
+7,0 -> 7,4
+6,4 -> 2,0
+0,9 -> 2,9
+3,4 -> 1,4
+0,0 -> 8,8
+5,5 -> 8,2""".splitlines()
+lines = [parse_line(l) for l in test_in5]
+day5_1(lines)
+# %%
+def day5_2(lines: list[Line]):
+    def diagonal_coordinates(c1: int, c2: int) -> list[int]:
+        if c1 < c2:
+            return [x for x in range(c1, c2 + 1)]
+        return [x for x in range(c1, c2 - 1, -1)]
+
+    points: list[Point] = []
+    for (p1, p2) in lines:
+        if p1.x == p2.x or p1.y == p2.y:
+            # since 2 points have the same x or y
+            # the square becomes a line
+            points += [
+                (x, y)
+                for x in range(min(p1.x, p2.x), max(p1.x, p2.x) + 1)
+                for y in range(min(p1.y, p2.y), max(p1.y, p2.y) + 1)
+            ]
+        else:
+            xs, ys = diagonal_coordinates(p1.x, p2.x), diagonal_coordinates(p1.y, p2.y)
+            points += zip(xs, ys)
+    return quantify(Counter(points).values(), lambda v: v > 1)
+
+
+day5_2(lines)
+# %%
+do(5, 5690, 17741)
