@@ -390,24 +390,15 @@ do(5, 5690, 17741)
 in6: list[int] = data(6, int, sep=",")
 in6
 
-
-def new_gen(nums: dict[int, int]) -> dict[int, int]:
-    new_fs = defaultdict(int)
-
-    for k, v in nums.items():
-        if k == 0:
-            new_fs[6] += v
-            new_fs[8] += v
-        else:
-            new_fs[k - 1] += v
-    return new_fs
-
-
 def count_fish(init_fish: list[int], days_count) -> int:
-    fs = Counter(init_fish)
+    fs = [0] * 9
+    for f in init_fish:
+        fs[f] += 1
     for _ in range(days_count):
-        fs = new_gen(fs)
-    return sum(fs.values())
+        new_fs = fs[1:] + fs[0:1]
+        new_fs[6] += fs[0]
+        fs = new_fs
+    return sum(fs)
 
 
 def day6_1(nums: list[int]) -> int:
