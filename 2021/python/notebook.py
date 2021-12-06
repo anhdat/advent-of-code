@@ -338,7 +338,7 @@ def day5_1(lines: list[Line]):
     for (p1, p2) in lines:
         if p1.x == p2.x or p1.y == p2.y:
             # since 2 points have the same x or y
-            # the square becomes a line
+            # the rectangle becomes a line
             points += [
                 (x, y)
                 for x in range(min(p1.x, p2.x), max(p1.x, p2.x) + 1)
@@ -370,7 +370,7 @@ def day5_2(lines: list[Line]):
     for (p1, p2) in lines:
         if p1.x == p2.x or p1.y == p2.y:
             # since 2 points have the same x or y
-            # the square becomes a line
+            # the rectangle becomes a line
             points += [
                 (x, y)
                 for x in range(min(p1.x, p2.x), max(p1.x, p2.x) + 1)
@@ -385,3 +385,39 @@ def day5_2(lines: list[Line]):
 day5_2(lines)
 # %%
 do(5, 5690, 17741)
+# %%
+
+in6: list[int] = data(6, int, sep=",")
+in6
+
+
+def new_gen(nums: dict[int, int]) -> dict[int, int]:
+    new_fs = defaultdict(int)
+
+    for k, v in nums.items():
+        if k == 0:
+            new_fs[6] += v
+            new_fs[8] += v
+        else:
+            new_fs[k - 1] += v
+    return new_fs
+
+
+def count_fish(init_fish: list[int], days_count) -> int:
+    fs = Counter(init_fish)
+    for _ in range(days_count):
+        fs = new_gen(fs)
+    return sum(fs.values())
+
+
+def day6_1(nums: list[int]) -> int:
+    return count_fish(nums, 80)
+
+
+def day6_2(nums: list[int]) -> int:
+    return count_fish(nums, 256)
+
+
+nums = [3, 4, 3, 1, 2]
+assert day6_1(nums) == 5934
+do(6, 395627, 1767323539209)
