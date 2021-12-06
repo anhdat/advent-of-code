@@ -395,9 +395,8 @@ def count_fish(init_fish: list[int], days_count) -> int:
     for f in init_fish:
         fs[f] += 1
     for _ in range(days_count):
-        new_fs = fs[1:] + fs[0:1]
-        new_fs[6] += fs[0]
-        fs = new_fs
+        fs = fs[1:] + fs[:1]
+        fs[6] += fs[8]
     return sum(fs)
 
 
