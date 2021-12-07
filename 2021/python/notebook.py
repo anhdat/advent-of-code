@@ -390,6 +390,7 @@ do(5, 5690, 17741)
 in6: list[int] = data(6, int, sep=",")
 in6
 
+
 def count_fish(init_fish: list[int], days_count) -> int:
     fs = [0] * 9
     for f in init_fish:
@@ -411,3 +412,30 @@ def day6_2(nums: list[int]) -> int:
 nums = [3, 4, 3, 1, 2]
 assert day6_1(nums) == 5934
 do(6, 395627, 1767323539209)
+# %%
+# Day 7
+
+in7: list[int] = data(7, int, ",")
+
+nums = [16, 1, 2, 0, 4, 2, 7, 1, 2, 14]
+import statistics
+
+
+def day7_1(nums: list[int]) -> int:
+    m = statistics.median(nums)
+    return int(sum(abs(m - i) for i in nums))
+
+
+def day7_2(nums: list[int]) -> int:
+    def cal(target: int) -> int:
+        ns = [abs(target - i) for i in nums]
+        fs = [(n * (n + 1) / 2) for n in ns]
+        return int(sum(fs))
+
+    avg = sum(nums) / len(nums)
+    return min(cal(math.ceil(avg)), cal(math.floor(avg)))
+
+
+assert day7_1(nums) == 37
+assert day7_2(nums) == 168
+do(7, 335271, 95851339)
