@@ -523,7 +523,8 @@ def signals_to_map(signals: list[SignalPattern]):
     4    5
      6666
     """
-    gs = {k: list(v) for k,v in groupby(sorted(signals, key=len), key=len)}
+    signals = [cat(sorted(v)) for v in signals]
+    gs = {k: set(v) for k, v in groupby(sorted(signals, key=len), key=len)}
     sf = lambda s: set(first(s))
 
     one = sf(gs[2])
@@ -533,52 +534,27 @@ def signals_to_map(signals: list[SignalPattern]):
     three = sf([p for p in gs[5] if len(set(p) & one) == 2])
     six = sf([p for p in gs[6] if len(set(p) & one) == 1])
     nine = sf([p for p in gs[6] if len(set(p) & three) == 5])
+    five = sf([p for p in gs[5] if len(set(p) & (four - one)) == 2])
+    two = gs[5] - {cat(sorted(five))} - {cat(sorted(three))}
+    zero = gs[6] - {cat(sorted(six))} - {cat(sorted(nine))}
 
-    index_0 = seven - one
-    index_2 = one - six
-    index_5 = one - index_2
-    index_4 = eight - nine
-    index_1 = nine - three
-    index_3 = four - (one | index_1)
-    index_6 = three - (seven | index_3)
-    return [
-        first(i)
-        for i in (index_0, index_1, index_2, index_3, index_4, index_5, index_6)
+    a = [
+        cat(sorted(i))
+        for i in (zero, one, two, three, four, five, six, seven, eight, nine)
     ]
+    return a
 
 
 def output_to_num(output: OutVal, m: list[str]) -> int:
-    """
-     0000
-    1    2
-    1    2
-     3333
-    4    5
-    4    5
-     6666
-    """
-    nums = [
-        set([m[0], m[1], m[2], m[4], m[5], m[6]]),  # 0
-        set([m[2], m[5]]),
-        set([m[0], m[2], m[3], m[4], m[6]]),  # 2
-        set([m[0], m[2], m[3], m[5], m[6]]),
-        set([m[1], m[2], m[3], m[5]]),  # 4
-        set([m[0], m[1], m[3], m[5], m[6]]),
-        set([m[0], m[1], m[3], m[4], m[5], m[6]]),  # 6
-        set([m[0], m[2], m[5]]),
-        set([m[0], m[1], m[2], m[3], m[4], m[5], m[6]]),  # 8
-        set([m[0], m[1], m[2], m[3], m[5], m[6]]),
-    ]
-
-    output = set(output)
-    for i, n in enumerate(nums):
-        if len(output) == len(n) and len(output & n) == len(n):
-            return i
-
-    return -1
+    output = cat(sorted(output))
+    return first([i for i, n in enumerate(m) if output == n])
 
 
 lines = test_lines
+m = signals_to_map(lines[0][0])
+assert [output_to_num(n, m) for n in lines[0][1]] == [8, 3, 9, 4]
+m = signals_to_map(lines[1][0])
+assert [output_to_num(n, m) for n in lines[1][1]] == [9, 7, 8, 1]
 
 
 def day8_2(lines: list[SignalLine]) -> int:
