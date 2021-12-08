@@ -527,18 +527,13 @@ def signals_to_map(signals: list[SignalPattern]):
     seven = set([p for p in signals if len(p) == 3][0])
     four = set([p for p in signals if len(p) == 4][0])
     eight = set([p for p in signals if len(p) == 7][0])
+    three = set([p for p in signals if len(p) == 5 and len(set(p) & one) == 2][0])
+    six = set([p for p in signals if len(p) == 6 and len(set(p) & one) == 1][0])
+    nine = set([p for p in signals if len(p) == 6 and len(set(p) & three) == 5][0])
 
     index_0 = seven - one
-
-    three = set([p for p in signals if len(p) == 5 and len(set(p) & set(one)) == 2][0])
-
-    six = set([p for p in signals if len(p) == 6 and len(set(p) & set(one)) == 1][0])
-
     index_2 = one - six
     index_5 = one - index_2
-
-    nine = set([p for p in signals if len(p) == 6 and len(set(p) & set(three)) == 5][0])
-
     index_4 = eight - nine
     index_1 = nine - three
     index_3 = four - (one | index_1)
