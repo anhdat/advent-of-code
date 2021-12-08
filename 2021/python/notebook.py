@@ -439,3 +439,157 @@ def day7_2(nums: list[int]) -> int:
 assert day7_1(nums) == 37
 assert day7_2(nums) == 168
 do(7, 335271, 95851339)
+# %%
+# Day 8
+SignalPattern = str
+OutVal = str
+SignalLine = (list[SignalPattern], list[OutVal])
+
+
+def parse_signal_lines(lines: list[str]) -> list[SignalLine]:
+    ls = []
+    for l in lines:
+        cs = l.split()
+        ls.append((cs[:10], cs[11:]))
+    return ls
+
+
+in8: list[SignalLine] = parse_signal_lines(data(8))
+in8
+
+
+def day8_1(lines: list[SignalLine]) -> int:
+    return sum(
+        [quantify([len(s) for s in l[1]], lambda v: v in [2, 3, 4, 7]) for l in lines]
+    )
+
+
+test_input = """be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
+edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
+fgaebd cg bdaec gdafb agbcfd gdcbef bgcad gfac gcb cdgabef | cg cg fdcagb cbg
+fbegcd cbd adcefb dageb afcb bc aefdc ecdab fgdeca fcdbega | efabcd cedba gadfec cb
+aecbfdg fbg gf bafeg dbefa fcge gcbea fcaegb dgceab fcbdga | gecf egdcabf bgf bfgea
+fgeab ca afcebg bdacfeg cfaedg gcfdb baec bfadeg bafgc acf | gebdcfa ecba ca fadegcb
+dbcfg fgd bdegcaf fgec aegbdf ecdfab fbedc dacgb gdcebf gf | cefg dcbef fcge gbcadfe
+bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbgef
+egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
+gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce""".splitlines()
+test_lines = parse_signal_lines(test_input)
+assert day8_1(lines) == 26
+
+"""
+  0:      1:      2:      3:      4:
+ aaaa    ....    aaaa    aaaa    ....
+b    c  .    c  .    c  .    c  b    c
+b    c  .    c  .    c  .    c  b    c
+ ....    ....    dddd    dddd    dddd
+e    f  .    f  e    .  .    f  .    f
+e    f  .    f  e    .  .    f  .    f
+ gggg    ....    gggg    gggg    ....
+
+  5:      6:      7:      8:      9:
+ aaaa    aaaa    aaaa    aaaa    aaaa
+b    .  b    .  .    c  b    c  b    c
+b    .  b    .  .    c  b    c  b    c
+ dddd    dddd    ....    dddd    dddd
+.    f  e    f  .    f  e    f  .    f
+.    f  e    f  .    f  e    f  .    f
+ gggg    gggg    ....    gggg    gggg
+
+length
+1: 2
+7: 3
+4: 4
+
+2: 5
+3: 5
+5: 5
+
+6: 6
+0: 6
+9: 6
+
+8: 7
+"""
+
+
+def signals_to_map(signals: list[SignalPattern]):
+    """
+     0000
+    1    2
+    1    2
+     3333
+    4    5
+    4    5
+     6666
+    """
+    one = set([p for p in signals if len(p) == 2][0])
+    seven = set([p for p in signals if len(p) == 3][0])
+    four = set([p for p in signals if len(p) == 4][0])
+    eight = set([p for p in signals if len(p) == 7][0])
+
+    index_0 = seven - one
+
+    three = set([p for p in signals if len(p) == 5 and len(set(p) & set(one)) == 2][0])
+
+    six = set([p for p in signals if len(p) == 6 and len(set(p) & set(one)) == 1][0])
+
+    index_2 = one - six
+    index_5 = one - index_2
+
+    nine = set([p for p in signals if len(p) == 6 and len(set(p) & set(three)) == 5][0])
+
+    index_4 = eight - nine
+    index_1 = nine - three
+    index_3 = four - (one | index_1)
+    index_6 = three - (seven | index_3)
+    return [
+        first(i)
+        for i in (index_0, index_1, index_2, index_3, index_4, index_5, index_6)
+    ]
+
+
+def output_to_num(output: OutVal, m: list[str]) -> int:
+    """
+     0000
+    1    2
+    1    2
+     3333
+    4    5
+    4    5
+     6666
+    """
+    nums = [
+        set([m[0], m[1], m[2], m[4], m[5], m[6]]),  # 0
+        set([m[2], m[5]]),
+        set([m[0], m[2], m[3], m[4], m[6]]),  # 2
+        set([m[0], m[2], m[3], m[5], m[6]]),
+        set([m[1], m[2], m[3], m[5]]),  # 4
+        set([m[0], m[1], m[3], m[5], m[6]]),
+        set([m[0], m[1], m[3], m[4], m[5], m[6]]),  # 6
+        set([m[0], m[2], m[5]]),
+        set([m[0], m[1], m[2], m[3], m[4], m[5], m[6]]),  # 8
+        set([m[0], m[1], m[2], m[3], m[5], m[6]]),
+    ]
+
+    output = set(output)
+    for i, n in enumerate(nums):
+        if len(output) == len(n) and len(output & n) == len(n):
+            return i
+
+    return -1
+
+
+lines = test_lines
+
+
+def day8_2(lines: list[SignalLine]) -> int:
+    s = 0
+    for l in lines:
+        m = signals_to_map(l[0])
+        nums = "".join([str(n) for n in [output_to_num(n, m) for n in l[1]]])
+        s += int(nums)
+    return s
+
+
+do(8, 255, 982158)
