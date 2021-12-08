@@ -1,7 +1,7 @@
 # %%
 # Helpers from norvig's pytudes
 from collections import Counter, defaultdict, namedtuple, deque
-from itertools import permutations, combinations, product, chain
+from itertools import groupby, permutations, combinations, product, chain
 from functools import lru_cache
 from typing import Dict, Tuple, Set, List, Iterator, Optional, Union, Iterable
 from typing import NamedTuple
@@ -523,13 +523,16 @@ def signals_to_map(signals: list[SignalPattern]):
     4    5
      6666
     """
-    one = set([p for p in signals if len(p) == 2][0])
-    seven = set([p for p in signals if len(p) == 3][0])
-    four = set([p for p in signals if len(p) == 4][0])
-    eight = set([p for p in signals if len(p) == 7][0])
-    three = set([p for p in signals if len(p) == 5 and len(set(p) & one) == 2][0])
-    six = set([p for p in signals if len(p) == 6 and len(set(p) & one) == 1][0])
-    nine = set([p for p in signals if len(p) == 6 and len(set(p) & three) == 5][0])
+    gs = {k: list(v) for k,v in groupby(sorted(signals, key=len), key=len)}
+    sf = lambda s: set(first(s))
+
+    one = sf(gs[2])
+    seven = sf(gs[3])
+    four = sf(gs[4])
+    eight = sf(gs[7])
+    three = sf([p for p in gs[5] if len(set(p) & one) == 2])
+    six = sf([p for p in gs[6] if len(set(p) & one) == 1])
+    nine = sf([p for p in gs[6] if len(set(p) & three) == 5])
 
     index_0 = seven - one
     index_2 = one - six
