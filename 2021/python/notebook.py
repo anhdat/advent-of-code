@@ -567,3 +567,79 @@ def day8_2(lines: list[SignalLine]) -> int:
 
 
 do(8, 255, 982158)
+# %%
+# Day 9
+
+in9: list[list[int]] = data(9, lambda v: [int(i) for i in v])
+Point = NamedTuple("Point", x=int, y=int)
+Table = list[list[int]]
+
+directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+
+
+def neighbors(p: Point, table: Table) -> list[Point]:
+    return [
+        Point(y=p.y + dy, x=p.x + dx)
+        for dx, dy in directions
+        if 0 <= p.x + dx < len(table[0]) and 0 <= p.y + dy < len(table)
+    ]
+
+
+def is_low_point(p: Point, table: Table) -> bool:
+    neighbor_vals = [table[p.y][p.x] for p in neighbors(p, table)]
+    return all([table[p.y][p.x] < i for i in neighbor_vals])
+
+
+def day9_1(table: list[list[int]]) -> int:
+    return sum(
+        [
+            table[r][c] + 1
+            for r in range(len(table))
+            for c in range(len(table[r]))
+            if is_low_point(Point(x=c, y=r), table)
+        ]
+    )
+
+
+test_lines = """2199943210
+3987894921
+9856789892
+8767896789
+9899965678""".splitlines()
+lines = [[int(i) for i in s] for s in test_lines]
+lines
+assert day9_1(lines) == 15
+
+
+def find_basin(low_point: Point, table: Table) -> list[Point]:
+    q = deque()
+    q.append(low_point)
+    bs = set()
+    visisteds = set()
+    while q:
+        p = q.popleft()
+        visisteds.add(p)
+        bs.add(p)
+        for np in neighbors(p, table):
+            if table[np.y][np.x] < 9 and np not in visisteds:
+                q.append(np)
+
+    return list(bs)
+
+
+def day9_2(table: list[list[int]]) -> int:
+    low_points: list[Point] = [
+        Point(x=c, y=r)
+        for r in range(len(table))
+        for c in range(len(table[r]))
+        if is_low_point(Point(x=c, y=r), table)
+    ]
+
+    bss = [find_basin(p, table) for p in low_points]
+    bss_lengths = sorted(list(map(len, bss)), reverse=True)
+    return math.prod(bss_lengths[:3])
+
+
+assert day9_2(lines) == 1134
+
+do(9, 564)
