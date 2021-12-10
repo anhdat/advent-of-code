@@ -6,6 +6,7 @@ from functools import lru_cache
 from typing import Dict, Tuple, Set, List, Iterator, Optional, Union, Iterable
 from typing import NamedTuple
 from dataclasses import dataclass
+import statistics
 
 import operator
 import math
@@ -418,7 +419,6 @@ do(6, 395627, 1767323539209)
 in7: list[int] = data(7, int, ",")
 
 nums = [16, 1, 2, 0, 4, 2, 7, 1, 2, 14]
-import statistics
 
 
 def day7_1(nums: list[int]) -> int:
@@ -643,3 +643,96 @@ def day9_2(table: list[list[int]]) -> int:
 assert day9_2(lines) == 1134
 
 do(9, 564)
+# %%
+# Day 10
+
+in10: list[str] = data(10)
+
+m = {
+    ")": "(",
+    "}": "{",
+    "]": "[",
+    ">": "<",
+}
+
+
+def is_corrupted(line: str) -> tuple[bool, str]:
+    stack = []
+    for c in line:
+        if c in "([{<":
+            stack.append(c)
+        else:
+            cc = stack.pop()
+            if cc != m[c]:
+                return (True, c)
+    return (False, "")
+
+
+def day10_1(lines: list[str]) -> int:
+    points = {
+        ")": 3,
+        "}": 1197,
+        "]": 57,
+        ">": 25137,
+    }
+    cs = []
+    for l in lines:
+        (isc, c) = is_corrupted(l)
+        if isc:
+            cs.append(c)
+    print()
+    s = 0
+    for k, v in Counter(cs).items():
+        s += points[k] * v
+
+    return s
+    pass
+
+
+def cal_inc_score(added: str) -> int:
+    ps = {
+        ")": 1,
+        "]": 2,
+        "}": 3,
+        ">": 4,
+    }
+    s = 0
+    for c in added:
+        s *= 5
+        s += ps[c]
+    return s
+
+
+cal_inc_score(r"}}]])})]")
+
+
+def is_incomplete(line: str) -> tuple[bool, int]:
+    m2 = {
+        "(": ")",
+        "{": "}",
+        "[": "]",
+        "<": ">",
+    }
+    stack = []
+    for c in line:
+        if c in "([{<":
+            stack.append(c)
+        else:
+            cc = stack.pop()
+            if cc != m[c]:
+                return (False, c)
+    stack.reverse()
+    return (True, [m2[c] for c in stack])
+
+
+def day10_2(lines):
+    incs = []
+    for l in lines:
+        (is_inc, addeds) = is_incomplete(l)
+        if is_inc:
+            incs.append(addeds)
+    inc_scores = [cal_inc_score(a) for a in incs]
+    return statistics.median(inc_scores)
+
+
+do(10, 339477, 3049320156)
