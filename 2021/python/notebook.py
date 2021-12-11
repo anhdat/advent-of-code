@@ -734,3 +734,61 @@ def day10_2(lines):
 
 
 do(10, 339477, 3049320156)
+
+# %%
+# Day 11
+
+directions = [
+    (0, 1), (1, 0), (0, -1), (-1, 0),
+    (1, 1), (-1, -1), (1, -1), (-1, 1),
+]
+in11: list[list[int]] = data(11, lambda v: [int(a) for a in v])
+
+Point = tuple[int, int]
+Table = list[list[int]]
+from pprint import pprint
+
+def next(m: Table) ->  int:
+    q = deque()
+    for r in range(len(m)):
+        for c in range(len(m[0])):
+            m[r][c] += 1
+            if m[r][c] > 9:
+                q.append((c, r))
+
+    flashes = 0
+    while q:
+        (c, r) = q.pop()
+        if m[r][c] > 9:
+            flashes += 1
+            m[r][c] = 0
+
+            for (dx, dy) in directions:
+                x = c + dx
+                y = r + dy
+                if 0 <= x < len(m[0]) and 0 <= y < len(m):
+                    if m[y][x] <= 9 and m[y][x] != 0:
+                        m[y][x] += 1
+                        if m[y][x] > 9:
+                            q.append((x, y))
+    return flashes
+
+def day11_1(m: Table) -> int:
+    c = 0
+    for _ in range(100):
+        c += next(m)
+    return c
+
+m = """5483143223
+2745854711
+5264556173
+6141336146
+6357385478
+4167524645
+2176841721
+6882881134
+4846848554
+5283751526""".splitlines()
+m = [[int(i) for i in l] for l in m ]
+assert day11_1(m) == 1656
+do(11, 1603)
