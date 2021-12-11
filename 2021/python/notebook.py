@@ -21,7 +21,7 @@ import copy
 def data(day: int, parser=str, sep="\n") -> list:
     "Split the day's input file into sections separated by `sep`, and apply `parser` to each."
     sections = (
-        open(f"/Users/dat/Developer/advent-of-code/2021/inputs/day{day:02}/input.txt")
+        open(f"../inputs/day{day:02}/input.txt")
         .read()
         .rstrip()
         .split(sep)
