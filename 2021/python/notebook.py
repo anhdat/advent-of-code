@@ -113,6 +113,7 @@ cat = "".join
 flatten = chain.from_iterable
 
 # %%
+# Day 1
 
 in1: list[int] = data(1, int)
 
@@ -127,6 +128,7 @@ def day1_2(nums: list[int]):
 
 do(1, 1374, 1418)
 # %%
+# Day 2
 
 Command = tuple[str, int]
 
@@ -323,6 +325,8 @@ in4 = BingoGame.from_input(data(4, sep="\n\n"))
 do(4, 74320, 17884)
 
 # %%
+# Day 5
+
 Point = NamedTuple("Point", x=int, y=int)
 Line = tuple[Point, Point]
 
@@ -360,8 +364,8 @@ test_in5 = """0,9 -> 5,9
 0,0 -> 8,8
 5,5 -> 8,2""".splitlines()
 lines = [parse_line(l) for l in test_in5]
-day5_1(lines)
-# %%
+assert day5_1(lines) == 5
+
 def day5_2(lines: list[Line]):
     def diagonal_coordinates(c1: int, c2: int) -> list[int]:
         if c1 < c2:
@@ -384,10 +388,10 @@ def day5_2(lines: list[Line]):
     return quantify(Counter(points).values(), lambda v: v > 1)
 
 
-day5_2(lines)
-# %%
+assert day5_2(lines) == 12
 do(5, 5690, 17741)
 # %%
+# Day 6
 
 in6: list[int] = data(6, int, sep=",")
 in6
@@ -458,12 +462,10 @@ def parse_signal_lines(lines: list[str]) -> list[SignalLine]:
 in8: list[SignalLine] = parse_signal_lines(data(8))
 in8
 
-
 def day8_1(lines: list[SignalLine]) -> int:
     return sum(
         [quantify([len(s) for s in l[1]], lambda v: v in [2, 3, 4, 7]) for l in lines]
     )
-
 
 test_input = """be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
 edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
@@ -476,7 +478,7 @@ bdfegc cbegaf gecbf dfcage bdacg ed bedf ced adcbefg gebcd | ed bcgafe cdgba cbg
 egadfb cdbfeg cegd fecab cgb gbdefca cg fgcdab egfdb bfceg | gbdfcae bgc cg cgb
 gcafb gcf dcaebfg ecagb gf abcdeg gaef cafbge fdbac fegbdc | fgae cfgab fg bagce""".splitlines()
 test_lines = parse_signal_lines(test_input)
-assert day8_1(lines) == 26
+assert day8_1(test_lines) == 26
 
 """
   0:      1:      2:      3:      4:
