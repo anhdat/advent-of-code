@@ -680,13 +680,11 @@ def day10_1(lines: list[str]) -> int:
         (isc, c) = is_corrupted(l)
         if isc:
             cs.append(c)
-    print()
     s = 0
     for k, v in Counter(cs).items():
         s += points[k] * v
 
     return s
-    pass
 
 
 def cal_inc_score(added: str) -> int:
