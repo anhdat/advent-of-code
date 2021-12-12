@@ -20,12 +20,7 @@ import copy
 
 def data(day: int, parser=str, sep="\n") -> list:
     "Split the day's input file into sections separated by `sep`, and apply `parser` to each."
-    sections = (
-        open(f"../inputs/day{day:02}/input.txt")
-        .read()
-        .rstrip()
-        .split(sep)
-    )
+    sections = open(f"../inputs/day{day:02}/input.txt").read().rstrip().split(sep)
     return [parser(section) for section in sections]
 
 
@@ -366,6 +361,7 @@ test_in5 = """0,9 -> 5,9
 lines = [parse_line(l) for l in test_in5]
 assert day5_1(lines) == 5
 
+
 def day5_2(lines: list[Line]):
     def diagonal_coordinates(c1: int, c2: int) -> list[int]:
         if c1 < c2:
@@ -462,10 +458,12 @@ def parse_signal_lines(lines: list[str]) -> list[SignalLine]:
 in8: list[SignalLine] = parse_signal_lines(data(8))
 in8
 
+
 def day8_1(lines: list[SignalLine]) -> int:
     return sum(
         [quantify([len(s) for s in l[1]], lambda v: v in [2, 3, 4, 7]) for l in lines]
     )
+
 
 test_input = """be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb | fdgacbe cefdb cefbgd gcbe
 edbfga begcd cbg gc gcadebf fbgde acbgfd abcde gfcbed gfec | fcgedb cgb dgebacf gc
@@ -812,3 +810,83 @@ def day11_2(m: Table) -> int:
 
 
 do(11, 1603, 222)
+
+# %%
+# Day 12
+
+Path = tuple[str, str]
+
+in12: list[Path] = data(12, lambda l: (l.split("-")[0], l.split("-")[1]))
+in12
+
+
+def count_paths_until(v, visiteds, graph, path_count):
+    if v.islower():
+        visiteds.add(v)
+
+    if v == "end":
+        path_count[0] += 1
+    else:
+        i = 0
+        while i < len(graph[v]):
+            if graph[v][i] not in visiteds:
+                count_paths_until(graph[v][i], visiteds, graph, path_count)
+            i += 1
+
+    if v.islower():
+        visiteds.remove(v)
+
+
+def day12_1(paths: list[Path]) -> int:
+    graph = defaultdict(list)
+    for p in paths:
+        graph[p[0]].append(p[1])
+        graph[p[1]].append(p[0])
+    path_count = [0]
+    visiteds = set()
+    count_paths_until("start", visiteds, graph, path_count)
+
+    return path_count[0]
+
+
+def count_paths_bfs(graph) -> int:
+    q = deque()
+
+    path = ["start"]
+    q.append(path.copy())
+
+    def should_add(vertex: str, path: list[str]) -> bool:
+        return (
+            vertex.isupper()
+            or vertex not in path
+            or (
+                vertex not in ("start", "end")
+                and all(v <= 1 for k, v in Counter(path).items() if k.islower())
+            )
+        )
+
+    count = 0
+    while 0 < len(q) < 100000:
+        path = q.popleft()
+        last = path[len(path) - 1]
+
+        if last == "end":
+            count += 1
+        else:
+            for current_vertex in graph[last]:
+                if should_add(current_vertex, path):
+                    newpath = path.copy()
+                    newpath.append(current_vertex)
+                    q.append(newpath)
+    return count
+
+
+def day12_2(paths: list[Path]) -> int:
+    graph = defaultdict(list)
+    for p in paths:
+        graph[p[0]].append(p[1])
+        graph[p[1]].append(p[0])
+    return count_paths_bfs(graph)
+
+
+do(12, 4754, 143562)
