@@ -890,3 +890,91 @@ def day12_2(paths: list[Path]) -> int:
 
 
 do(12, 4754, 143562)
+# %%
+# Day 13
+
+Point = tuple[int, int]
+FoldingIns = tuple[str, int]
+Manual = tuple[list[Point], list[FoldingIns]]
+
+
+def parse_folding(sections: list[str]) -> Manual:
+    points = [ints(l) for l in sections[0].splitlines()]
+    inss = []
+    for l in sections[1].splitlines():
+        cs = l.split("=")
+        inss.append((cs[0][-1], int(cs[1])))
+    return (points, inss)
+
+
+test_lines = """6,10
+0,14
+9,10
+0,3
+10,4
+4,11
+6,0
+6,12
+4,1
+0,13
+10,12
+3,4
+3,0
+8,4
+1,10
+2,14
+8,10
+9,0
+
+fold along y=7
+fold along x=5""".split(
+    "\n\n"
+)
+test_man = parse_folding(test_lines)
+
+
+def day13_1(man: Manual) -> int:
+    ps = man[0]
+    inss = man[1]
+    (direction, v) = inss[0]
+
+    new_ps = set()
+    if direction == "x":
+        for (x, y) in ps:
+            # fold left
+            if x > v:
+                x = v - abs(x - v)
+            new_ps.add((x, y))
+    else:
+        for (x, y) in ps:
+            # fold up
+            if y > v:
+                y = v - abs(y - v)
+            new_ps.add((x, y))
+
+    return len(new_ps)
+
+
+in13 = parse_folding(data(13, str, "\n\n"))
+in13
+
+
+def day13_2(man: Manual) -> int:
+    (ps, inss) = man
+
+    for (direction, v) in inss:
+        if direction == "x":
+            ps = {(v - abs(x - v), y) for (x, y) in ps}
+        else:
+            ps = {(x, v - abs(y - v)) for (x, y) in ps}
+
+    max_y = max(p[1] for p in ps)
+    max_x = max(p[0] for p in ps)
+    m = [["."] * (max_x + 1) for _ in range(max_y + 1)]
+    for (x, y) in ps:
+        m[y][x] = "#"
+    print("\n".join(["".join(r) for r in m]))
+    return 0
+
+
+do(13, 675, 0)
