@@ -988,12 +988,8 @@ def day14(instruction: Instruction, steps=int) -> int:
     template, rules = instruction
 
     # Init counts from the starting template
-    pair_counts = defaultdict(int)
-    char_counts = defaultdict(int)
-    for pair in zip(template[:-1], template[1:]):
-        pair_counts[pair] += 1
-    for c in template:
-        char_counts[c] += 1
+    pair_counts = defaultdict(int, Counter(zip(template[:-1], template[1:])))
+    char_counts = defaultdict(int, Counter(template))
 
     # Insert and track counts
     for _ in range(steps):
