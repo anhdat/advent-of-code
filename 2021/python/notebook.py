@@ -2,7 +2,7 @@
 # Helpers from norvig's pytudes
 from collections import Counter, defaultdict, namedtuple, deque
 from itertools import groupby, permutations, combinations, product, chain
-from functools import lru_cache
+from functools import lru_cache, reduce
 from typing import Dict, Tuple, Set, List, Iterator, Optional, Union, Iterable
 from typing import NamedTuple
 from dataclasses import dataclass
@@ -931,48 +931,33 @@ fold along x=5""".split(
     "\n\n"
 )
 test_man = parse_folding(test_lines)
+in13 = parse_folding(data(13, str, "\n\n"))
+
+
+def fold_manual(ps: list[Point], ins: FoldingIns) -> set[Point]:
+    direction, v = ins
+    if direction == "x":
+        return {(v - abs(x - v), y) for (x, y) in ps}
+    else:
+        return {(x, v - abs(y - v)) for (x, y) in ps}
 
 
 def day13_1(man: Manual) -> int:
-    ps = man[0]
-    inss = man[1]
-    (direction, v) = inss[0]
-
-    new_ps = set()
-    if direction == "x":
-        for (x, y) in ps:
-            # fold left
-            if x > v:
-                x = v - abs(x - v)
-            new_ps.add((x, y))
-    else:
-        for (x, y) in ps:
-            # fold up
-            if y > v:
-                y = v - abs(y - v)
-            new_ps.add((x, y))
-
-    return len(new_ps)
-
-
-in13 = parse_folding(data(13, str, "\n\n"))
-in13
+    return len(fold_manual(man[0], man[1][0]))
 
 
 def day13_2(man: Manual) -> int:
-    (ps, inss) = man
+    ps, inss = man
 
-    for (direction, v) in inss:
-        if direction == "x":
-            ps = {(v - abs(x - v), y) for (x, y) in ps}
-        else:
-            ps = {(x, v - abs(y - v)) for (x, y) in ps}
+    ps = reduce(fold_manual, inss, ps)
 
+    # Print manual
     max_y = max(p[1] for p in ps)
     max_x = max(p[0] for p in ps)
-    m = [["."] * (max_x + 1) for _ in range(max_y + 1)]
-    for (x, y) in ps:
-        m[y][x] = "#"
+    m = [
+        ["#" if (x, y) in ps else "." for x in range(max_x + 1)]
+        for y in range(max_y + 1)
+    ]
     print("\n".join(["".join(r) for r in m]))
     return 0
 
