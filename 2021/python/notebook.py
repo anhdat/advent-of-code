@@ -1012,10 +1012,11 @@ def day14(instruction: Instruction, steps=int) -> int:
 
     # Insert and track counts
     for _ in range(steps):
-        for (a, b), count in pair_counts.copy().items():
-            pair_counts[(a, b)] -= count
-            c = rules[(a, b)]
+        for pair, count in pair_counts.copy().items():
+            pair_counts[pair] -= count
+            c = rules[pair]
             char_counts[c] += count
+            a, b = pair
             pair_counts[(a, c)] += count
             pair_counts[(c, b)] += count
 
