@@ -978,3 +978,78 @@ def day13_2(man: Manual) -> int:
 
 
 do(13, 675, 0)
+
+# %%
+# Day 14
+
+InsertionRules = dict[str, str]
+Instruction = tuple[str, InsertionRules]
+
+
+def parse_polymer(sections: list[str]) -> Instruction:
+    template, raw_rules = sections
+    rules = {}
+    for l in raw_rules.splitlines():
+        cs = l.split(" -> ")
+        rules[(cs[0][0], cs[0][1])] = cs[1]
+    return (template, rules)
+
+
+in14 = parse_polymer(data(14, str, "\n\n"))
+in14
+
+
+def day14(instruction: Instruction, steps=int) -> int:
+    template, rules = instruction
+
+    # Init counts from the starting template
+    pair_counts = defaultdict(int)
+    char_counts = defaultdict(int)
+    for pair in zip(template[:-1], template[1:]):
+        pair_counts[pair] += 1
+    for c in template:
+        char_counts[c] += 1
+
+    # Insert and track counts
+    for _ in range(steps):
+        for (a, b), count in pair_counts.copy().items():
+            pair_counts[(a, b)] -= count
+            c = rules[(a, b)]
+            char_counts[c] += count
+            pair_counts[(a, c)] += count
+            pair_counts[(c, b)] += count
+
+    return max(char_counts.values()) - min(char_counts.values())
+
+
+def day14_1(instruction: Instruction) -> int:
+    return day14(instruction, 10)
+
+
+def day14_2(instruction: Instruction) -> int:
+    return day14(instruction, 40)
+
+
+test_sections = """NNCB
+
+CH -> B
+HH -> N
+CB -> H
+NH -> C
+HB -> C
+HC -> B
+HN -> C
+NN -> C
+BH -> H
+NC -> B
+NB -> B
+BN -> B
+BB -> N
+BC -> B
+CC -> N
+CN -> C""".split(
+    "\n\n"
+)
+test_ins = parse_polymer(test_sections)
+assert day14_1(test_ins) == 1588
+do(14, 2712, 8336623059567)
