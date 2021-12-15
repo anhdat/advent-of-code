@@ -1035,3 +1035,84 @@ CN -> C""".split(
 test_ins = parse_polymer(test_sections)
 assert day14_1(test_ins) == 1588
 do(14, 2712, 8336623059567)
+
+# %%
+# Day 15
+
+from heapq import heappush, heappop
+
+Point = tuple[int, int]
+Table = list[list[int]]
+in15: Table = data(15, lambda l: [int(c) for c in l])
+
+DIRECTIONS = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+
+
+def neighbors(p: Point, table: Table) -> list[Point]:
+    return [
+        (p[0] + dx, p[1] + dy)
+        for dx, dy in DIRECTIONS
+        if 0 <= p[0] + dx < len(table[0]) and 0 <= p[1] + dy < len(table)
+    ]
+
+
+def djikstra(graph: Table, start: Point, end: Point) -> Dict[Point, int]:
+    dist: dict[Point, int] = {start: 0}
+    pq: list[tuple[int, Point]] = []
+
+    for y, l in enumerate(graph):
+        for x, v in enumerate(l):
+            if (x, y) != start:
+                dist[(x, y)] = int(1e9)
+            heappush(pq, (int(1e9), (x, y)))
+
+    while pq:
+        _, u = heappop(pq)
+        if u == end:
+            return dist
+        for v in neighbors(u, graph):
+            new_length = dist[u] + graph[v[1]][v[0]]
+            if new_length < dist[v]:
+                dist[v] = new_length
+                heappush(pq, (new_length, v))
+    return dist
+
+
+def day15_1(graph: Table) -> int:
+    n, m = len(graph), len(graph[0])  # max y, max x
+    start, end = (0, 0), (n - 1, m - 1)
+    dist = djikstra(graph, start, end)
+    return dist[end]
+
+
+test_lines = """1163751742
+1381373672
+2136511328
+3694931569
+7463417111
+1319128137
+1359912421
+3125421639
+1293138521
+2311944581""".splitlines()
+test_graph = [[int(c) for c in l] for l in test_lines]
+assert day15_1(test_graph) == 40
+
+
+def build_full_map(graph: Table) -> Table:
+    n, m = len(graph), len(graph[0])  # max y, max x
+    new_graph = [[-1] * m * 5 for _ in range(n * 5)]
+    for dy, dx, y, x in product(range(5), range(5), range(n), range(m)):
+        new_val = (dy + dx + graph[y][x]) % 9
+        new_graph[dy * n + y][dx * m + x] = new_val if new_val != 0 else 9
+    return new_graph
+
+
+assert day15_1(build_full_map(test_graph)) == 315
+
+
+def day15_2(graph: Table) -> int:
+    return day15_1(build_full_map(graph))
+
+
+do(15, 592, 2897)
