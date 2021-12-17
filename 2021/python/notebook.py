@@ -1116,3 +1116,67 @@ def day15_2(graph: Table) -> int:
 
 
 do(15, 592, 2897)
+
+# %%
+# Day 17
+test_line = "target area: x=20..30, y=-10..-5"
+test_target = ints(test_line)
+
+Point = tuple[int, int]
+Target = tuple[int, int, int, int]
+
+
+def next(vx, vy, x, y):
+    x += vx
+    y += vy
+    if vx > 0:
+        vx -= 1
+    vy -= 1
+    return (vx, vy, x, y)
+
+
+def launch(target, vx, vy):
+    """Launch to the target with a velocity of vx, vy.
+
+    Return whether the probe is in target and the highest y position.
+    """
+    (x1, x2, y1, y2) = target
+    (x, y) = (0, 0)
+    ys = [y]
+    is_in = False
+    while not is_in and x < x2 and y > y1:
+        (vx, vy, x, y) = next(vx, vy, x, y)
+        ys.append(y)
+        is_in = x1 <= x <= x2 and y1 <= y <= y2
+    return (is_in, max(ys))
+
+
+@lru_cache
+def solve(target: Target) -> int:
+    max_ys = []
+    (x1, x2, y1, y2) = target
+    my = max(abs(y1), abs(y2))
+    mx = max(abs(x1), abs(x2))
+    for vx in range(1, mx + 1):
+        for vy in range(-my, my + 1):
+            is_in, y = launch(target, vx, vy)
+            if is_in:
+                max_ys.append(y)
+    return (max(max_ys), len(max_ys))
+
+
+def day17_1(target: Target) -> int:
+    return solve(target)[0]
+
+
+def day17_2(target: Target) -> int:
+    return solve(target)[1]
+
+
+assert day17_2(test_target) == 112
+
+in17: Target = data(17, ints)[0]
+in17
+
+day17_2(in17)
+do(17)
