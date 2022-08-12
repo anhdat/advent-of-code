@@ -1,12 +1,11 @@
 use std::fs;
 
 fn data_nums(day: &str) -> Vec<i32> {
-    fn parser(s: &str) -> i32 {
-        str::parse(s).unwrap()
-    }
-    // TODO: can we pass a lambda instead?
-    // let parser = |s| str::parse(s).unwrap();
-    data(day, parser)
+    data(day, |s: &str| str::parse(s).unwrap())
+}
+
+fn data_strings(day: &str) -> Vec<String> {
+    data(day, |s: &str| s.to_string())
 }
 
 fn data<T>(day: &str, parser: impl Fn(&str) -> T) -> Vec<T> {
