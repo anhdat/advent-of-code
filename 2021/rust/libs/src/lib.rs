@@ -17,6 +17,10 @@ pub fn data<T>(day: &str, parser: impl Fn(&str) -> T, pat: &str) -> Vec<T> {
     // println!("In file {}", filename);
     let content = fs::read_to_string(&filename)
         .expect(format!("Something went wrong reading the file: {}", &filename).as_str());
+    data_test(&content, parser, pat)
+}
+
+pub fn data_test<T>(content: &str, parser: impl Fn(&str) -> T, pat: &str) -> Vec<T> {
     content
         .split(pat)
         .map(|line| line.trim())
