@@ -204,10 +204,10 @@ def find_life_supp_rating(lines, most_common=True):
         chars = [l[current_index] for l in lines]
         mcs = Counter(chars).most_common(2)
         if mcs[0][1] == mcs[1][1]:
-            c_char = "1" if most_common else "0"
+            c = "1" if most_common else "0"
         else:
-            c_char = mcs[0][0] if most_common else mcs[1][0]
-        lines = [l for l in lines if l[current_index] == c_char]
+            c = mcs[0][0] if most_common else mcs[1][0]
+        lines = [l for l in lines if l[current_index] == c]
         current_index += 1
     return lines[0]
 
@@ -232,7 +232,7 @@ Ticket = list[list[int]]
 
 class BingoGame:
     @classmethod
-    def from_input(cls, sections):
+    def from_input(cls, sections: list[str]):
         game = BingoGame()
         game.draws = [int(num) for num in sections[0].split(",")]
         game.tickets = [
@@ -269,7 +269,9 @@ test_in4
 
 
 def day4_1(game: BingoGame) -> int:
-    sets: list[tuple[set[int], int]] = []
+    # List of all rows and cols with their board ID.
+    # Set is the best fit to check common items.
+    sets: list[(set[int], int)] = []
     for i, ticket in enumerate(game.tickets):
         for row in ticket:
             sets.append((set(row), i))
@@ -398,6 +400,7 @@ def count_fish(init_fish: list[int], days_count) -> int:
     for f in init_fish:
         fs[f] += 1
     for _ in range(days_count):
+        # 0s create new 8s, then become 6s
         fs = fs[1:] + fs[:1]
         fs[6] += fs[8]
     return sum(fs)
