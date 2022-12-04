@@ -44,24 +44,36 @@ fn parser(s: &str) -> AssignmentPair {
     (p(a), p(b))
 }
 
-#[test]
-fn test() {
-    let testing_content = "2-4,6-8
+const DAY: &str = "04";
+const TESTING_INPUT: &str = "2-4,6-8
     2-3,4-5
     5-7,7-9
     2-8,3-7
     6-6,4-6
     2-6,4-8";
-    let lines = data_test(testing_content, parser, "\n");
 
-    assert_eq!(part_1(lines.clone()), 2);
-    assert_eq!(part_2(lines.clone()), 4);
-}
+#[cfg(test)]
+mod tests {
+    use super::*;
 
-#[test]
-fn test_real_data() {
-    let lines = data("04", parser, "\n");
-
-    assert_eq!(part_1(lines.clone()), 576);
-    assert_eq!(part_2(lines.clone()), 905);
+    #[test]
+    fn test_part_1() {
+        let lines = data_test(TESTING_INPUT, parser, "\n");
+        assert_eq!(part_1(lines), 2);
+    }
+    #[test]
+    fn test_part_2() {
+        let lines = data_test(TESTING_INPUT, parser, "\n");
+        assert_eq!(part_2(lines), 3);
+    }
+    #[test]
+    fn test_real_data_part_1() {
+        let lines = data(DAY, parser, "\n");
+        assert_eq!(part_1(lines), 576);
+    }
+    #[test]
+    fn test_real_data_part_2() {
+        let lines = data(DAY, parser, "\n");
+        assert_eq!(part_2(lines), 905);
+    }
 }
