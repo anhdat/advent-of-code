@@ -24,14 +24,16 @@ struct Command {
 fn solve(input: (Ship, Vec<Command>), can_move_multiple: bool) -> String {
     let (mut ship, commands) = input;
     for command in commands {
-        let f = &mut ship[command.from - 1];
-        let mut m = f[(f.len() - command.amount)..].to_vec();
+        let from = &ship[command.from - 1];
+        let i = from.len() - command.amount;
+        let (_, b) = from.split_at(i);
+        let mut b = b.to_vec();
         // Stack is FIFO
         if !can_move_multiple {
-            m.reverse();
+            b.reverse();
         }
-        f.drain((f.len() - command.amount)..);
-        ship[command.to - 1].append(&mut m)
+        ship[command.to - 1].append(&mut b);
+        ship[command.from - 1].truncate(i);
     }
 
     let tops = ship
