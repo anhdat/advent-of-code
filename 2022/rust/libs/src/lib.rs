@@ -12,11 +12,16 @@ pub fn data_paragraphs(day: &str) -> Vec<String> {
     data(day, |s: &str| s.to_string(), "\n\n")
 }
 
-pub fn data<T>(day: &str, parser: impl Fn(&str) -> T, pat: &str) -> Vec<T> {
+pub fn read_input(day: &str) -> String {
     let filename = format!("../../inputs/day{day}/input.txt");
     // println!("In file {}", filename);
     let content = fs::read_to_string(&filename)
         .expect(format!("Something went wrong reading the file: {}", &filename).as_str());
+    content
+}
+
+pub fn data<T>(day: &str, parser: impl Fn(&str) -> T, pat: &str) -> Vec<T> {
+    let content = read_input(day);
     data_test(&content, parser, pat)
 }
 
