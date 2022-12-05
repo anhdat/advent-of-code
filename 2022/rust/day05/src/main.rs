@@ -1,7 +1,10 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
+mod models;
+mod parse_nom;
+mod parse_normal;
+
 use itertools::*;
-use regex::Regex;
 use std::{
     collections::{HashSet, VecDeque},
     ops::RangeInclusive,
@@ -9,17 +12,9 @@ use std::{
     vec,
 };
 
+use crate::models::*;
 use libs::*;
-
 fn main() {}
-
-type Ship = Vec<Vec<char>>;
-#[derive(Clone)]
-struct Command {
-    amount: usize,
-    from: usize,
-    to: usize,
-}
 
 fn solve(input: (Ship, Vec<Command>), can_move_multiple: bool) -> String {
     let (mut ship, commands) = input;
@@ -51,51 +46,13 @@ fn part_1(input: (Ship, Vec<Command>)) -> String {
 fn part_2(input: (Ship, Vec<Command>)) -> String {
     solve(input, true)
 }
-
 fn parser(s: &str) -> (Ship, Vec<Command>) {
-    let (ship_part, commands_part) = s.split_once("\n\n").unwrap();
-
-    // Parse stacks
-    let mut ship: Ship = vec![];
-    (0..10).foreach(|_| ship.push(vec![]));
-
-    ship_part.lines().rev().for_each(|x| {
-        x.chars()
-            .chunks(4)
-            .into_iter()
-            .enumerate()
-            .for_each(|(i, c)| {
-                let cs = c.into_iter().collect::<Vec<char>>();
-                if cs[0] == '[' {
-                    ship[i].push(cs[1]);
-                }
-            });
-    });
-
-    // Parse commands
-    let re = Regex::new(r"move (?P<amount>\d+) from (?P<from>\d+) to (?P<to>\d+)").unwrap();
-    let commands = commands_part
-        .lines()
-        .map(|x| {
-            let cap = re.captures(x).unwrap();
-            Command {
-                amount: cap
-                    .name("amount")
-                    .unwrap()
-                    .as_str()
-                    .parse::<usize>()
-                    .unwrap(),
-                from: cap.name("from").unwrap().as_str().parse::<usize>().unwrap(),
-                to: cap.name("to").unwrap().as_str().parse::<usize>().unwrap(),
-            }
-        })
-        .collect::<Vec<Command>>();
-
-    (ship, commands)
+    parse_nom::parse(s)
+    // parse_normal::parse_normal(s)
 }
 
 const DAY: &str = "05";
-const TESTING_INPUT: &str = "    [D]
+pub const TESTING_INPUT: &str = "    [D]
 [N] [C]
 [Z] [M] [P]
  1   2   3
