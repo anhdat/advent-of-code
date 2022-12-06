@@ -1,0 +1,48 @@
+use crate::models::*;
+use std::str::FromStr;
+
+grammar;
+
+match {
+    "move",
+    "from",
+    "to",
+    "   ",
+    "[",
+    "]",
+    r"[0-9]+",
+    r"[A-Z]+",
+
+    // Skip whitespace and comments
+    r"\s*" => { },
+    r"//[^\n\r]*[\n\r]*" => { }, // `// comment`
+    r"/\*([^\*]*\*+[^\*/])*([^\*]*\*+|[^\*])*\*/" => { }, // `/* comment */`
+}
+
+
+pub Com: Command = {
+    "move" <a:Num> "from" <f:Num> "to" <t:Num> => {
+        Command{
+            amount: a as usize,
+            from: f as usize,
+            to: t as usize,
+        }
+    },
+};
+
+pub Num: i32 = <s:r"[0-9]+"> => i32::from_str(s).unwrap();
+pub Char: char = <s:r"[A-Z]+"> => s.chars().nth(0).unwrap();
+
+
+//     [D]
+// [N] [C]
+// [Z] [M] [P]
+pub Crat: Option<char> = {
+    "[" <c:Char> "]" => Some(c),
+    "   " => None,
+}
+
+pub Line: Vec<Option<char>> = {
+    <mut l:Line> <c:Crat> => {l.push(c); l},
+    <c:Crat> => vec![c],
+}

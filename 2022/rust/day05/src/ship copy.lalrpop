@@ -1,0 +1,74 @@
+use crate::lexer;
+use crate::models::*;
+use std::str::FromStr;
+
+// grammar;
+grammar<'input>(input: &'input str);
+
+// match {
+//     "move",
+//     "from",
+//     "to",
+//     "   ",
+//     "[",
+//     "]",
+//     r"[0-9]+",
+//     r"[A-Z]+",
+
+//     // Skip whitespace and comments
+//     r"\s*" => { },
+//     r"//[^\n\r]*[\n\r]*" => { }, // `// comment`
+//     r"/\*([^\*]*\*+[^\*/])*([^\*]*\*+|[^\*])*\*/" => { }, // `/* comment */`
+// }
+
+
+// pub Com: Command = {
+//     "move" <a:Num> "from" <f:Num> "to" <t:Num> => {
+//         Command{
+//             amount: a as usize,
+//             from: f as usize,
+//             to: t as usize,
+//         }
+//     },
+// };
+
+pub Num: i32 = "num" => {
+    println!("yo: {:?}", <>);
+    i32::from_str(<>).unwrap()
+};
+// pub Char: lexer::Tok = <s:r"[A-Z]+"> => lexer::Tok::Char(<>);
+
+
+//     [D]
+// [N] [C]
+// [Z] [M] [P]
+// pub Crat: Option<char> = {
+//     "[" <c:Char> "]" => Some(c),
+//     "   " => None,
+// }
+
+// pub Line: Vec<Option<char>> = {
+//     <mut l:Line> <c:Crat> => {l.push(c); l},
+//     <c:Crat> => vec![c],
+// }
+
+
+extern {
+    type Location = usize;
+    type Error = lexer::LexicalError;
+
+    // ...
+    enum lexer::Tok<'input> {
+        " " => lexer::Tok::Space,
+        "\t" => lexer::Tok::Tab,
+        "\n" => lexer::Tok::Linefeed,
+        "move" => lexer::Tok::LitMove,
+        "from" => lexer::Tok::LitFrom,
+        "to" => lexer::Tok::LitTo,
+        "[" => lexer::Tok::OpenSqrBrk,
+        "]" => lexer::Tok::CloseSqrBrk,
+        "num" => lexer::Tok::Num(<&'input str>),
+        r"[A-Z]+" => lexer::Tok::Char(<&'input str>),
+        "   " => lexer::Tok::EmptyCrat,
+    }
+}

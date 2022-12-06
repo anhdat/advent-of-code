@@ -1,8 +1,12 @@
 #![allow(unused_imports)]
 #![allow(dead_code)]
+mod lexer;
 mod models;
+mod parse_lalrpop;
 mod parse_nom;
 mod parse_normal;
+#[macro_use]
+extern crate lalrpop_util;
 
 use itertools::*;
 use std::{
