@@ -112,8 +112,8 @@ fn test_parse_testing_data() {
 
 pub fn parse(s: &str) -> (Ship, Vec<Command>) {
     let r = parse_input(s);
-    if r.is_ok() {
-        r.unwrap().1
+    if let Ok((_, out)) = r {
+        out
     } else {
         panic!("Cannot parse {:?}", r)
     }
