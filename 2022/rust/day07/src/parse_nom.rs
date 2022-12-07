@@ -5,9 +5,10 @@ use nom::{
     bytes::complete::{tag, take_while, take_while_m_n},
     character::complete::{
         self, alpha0, alpha1, alphanumeric1, anychar, char, digit0, digit1, multispace1, newline,
-        space0,
+        not_line_ending, space0,
     },
     combinator::{map_res, opt},
+    error::Error,
     multi::{fold_many0, many0, many1, separated_list1},
     sequence::{delimited, preceded, tuple},
     Err, IResult,
@@ -16,13 +17,17 @@ use nom::{
 fn command(input: &str) -> IResult<&str, Log> {
     // $ cd /
     // $ ls
-    let (input, (_, action, path)) = tuple((
-        tag("$ "),
-        alpha1,
-        opt(tuple((tag(" "), alt((tag("/"), tag(".."), alpha1))))),
-    ))(input)?;
+    let (input, (_, action, path)) =
+        tuple((tag("$ "), alpha1, opt(preceded(tag(" "), not_line_ending))))(input)?;
+
     match action {
-        "cd" => Ok((input, Log::Cd(path.unwrap().1.to_string()))),
+        "cd" => match path {
+            Some(path) => Ok((input, Log::Cd(path.to_string()))),
+            None => Err(Err::Error(Error::<&str> {
+                code: nom::error::ErrorKind::Fail,
+                input: input,
+            })),
+        },
         "ls" => Ok((input, Log::Ls)),
         _ => panic!("not supported action"),
     }
@@ -39,6 +44,7 @@ fn lsoutputdir(input: &str) -> IResult<&str, Log> {
     let (input, (_, path)) = tuple((tag("dir "), alpha1))(input)?;
     Ok((input, Log::Dir(path.to_string())))
 }
+
 fn lsoutputfile(input: &str) -> IResult<&str, Log> {
     let (input, (size, _, path, ext)) = tuple((
         complete::u64,
