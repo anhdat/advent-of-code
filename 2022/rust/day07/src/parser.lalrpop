@@ -1,0 +1,28 @@
+use std::str::FromStr;
+
+grammar;
+use crate::*;
+
+pub Logs: Vec<Log> = {
+    <mut ls:Logs> <l:Log> => {ls.push(l); ls},
+    Log => vec![<>],
+}
+
+Log: Log = {
+    "$" "cd" <p:Path> => {
+        Log::Cd(p)
+    },
+    "$" "ls" => {
+        Log::Ls
+    },
+    "dir" <Path> => {
+        Log::Dir(<>)
+    },
+    <n:Num> <p:Path> => {
+        Log::File(p, n as u64)
+    },
+};
+
+Num: i32 = <s:r"[0-9]+"> => i32::from_str(s).unwrap();
+Char: char = <s:r"[A-Z]+"> => s.chars().nth(0).unwrap();
+Path: String = <s:r"[a-z/\.]+"> => s.to_string();

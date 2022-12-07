@@ -3,6 +3,7 @@
 #[macro_use]
 extern crate lalrpop_util;
 
+mod parse_lalrpop;
 mod parse_nom;
 use itertools::*;
 use std::{
@@ -44,7 +45,8 @@ pub enum Log {
 }
 
 fn parser(s: &str) -> HashMap<String, u64> {
-    let ls = parse_nom::parse(s);
+    // let ls = parse_nom::parse(s);
+    let ls = parse_lalrpop::parse(s);
     let mut current_dir: Vec<String> = vec![];
     let mut m: HashMap<String, u64> = HashMap::new();
     m.insert("/".to_owned(), 0);
