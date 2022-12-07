@@ -19,18 +19,18 @@ fn main() {}
 
 fn part_1(dir_sizes: HashMap<String, u64>) -> u64 {
     dir_sizes
-        .into_iter()
-        .filter(|(_, v)| *v < 100000)
-        .map(|(_, v)| v)
+        .iter()
+        .filter(|(_, &v)| v < 100000)
+        .map(|(_, &v)| v)
         .sum::<u64>()
 }
 
 fn part_2(dir_sizes: HashMap<String, u64>) -> u64 {
-    let used = dir_sizes.get("/").unwrap().clone();
+    let used = dir_sizes.get("/").unwrap();
 
-    dir_sizes
-        .into_iter()
-        .filter(|(_, v)| (used - *v) < 70000000 - 30000000)
+    *dir_sizes
+        .iter()
+        .filter(|(_, &v)| (used - v) < 70000000 - 30000000)
         .map(|(_, v)| v)
         .min()
         .unwrap()
@@ -74,15 +74,13 @@ fn parser(s: &str) -> HashMap<String, u64> {
     }
 
     // Calculate size per directory
-    m.clone()
-        .into_iter()
-        .filter(|(_, v)| *v == 0)
+    m.iter()
+        .filter(|(_, &v)| v == 0)
         .map(|(d, _)| {
             (
                 d.clone(),
-                m.clone()
-                    .into_iter()
-                    .filter(|(k, _)| k.starts_with(&d))
+                m.iter()
+                    .filter(|(k, _)| k.starts_with(d))
                     .map(|(_, v)| v)
                     .sum::<u64>(),
             )
