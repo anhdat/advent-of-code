@@ -3,21 +3,7 @@ use std::str::FromStr;
 
 grammar;
 
-match {
-    "move",
-    "from",
-    "to",
-    "   ",
-    "[",
-    "]",
-    r"[0-9]+",
-    r"[A-Z]+",
 
-    // Skip whitespace and comments
-    r"\s*" => { },
-    r"//[^\n\r]*[\n\r]*" => { }, // `// comment`
-    r"/\*([^\*]*\*+[^\*/])*([^\*]*\*+|[^\*])*\*/" => { }, // `/* comment */`
-}
 
 
 pub Com: Command = {
@@ -39,10 +25,41 @@ pub Char: char = <s:r"[A-Z]+"> => s.chars().nth(0).unwrap();
 // [Z] [M] [P]
 pub Crat: Option<char> = {
     "[" <c:Char> "]" => Some(c),
-    "   " => None,
+    r"   " => None,
 }
 
 pub Line: Vec<Option<char>> = {
     <mut l:Line> <c:Crat> => {l.push(c); l},
     <c:Crat> => vec![c],
+}
+
+// TODO: still cannot parse list of commands
+pub ListOfCommands: Vec<Command> = {
+    Com => vec![<>],
+    <mut l:ListOfCommands> r"\n" <c:Com> => {l.push(c); l},
+}
+
+pub Ship: Vec<Vec<Option<char>>> = {
+    <mut s:Ship> r"\n" <l:Line> => {s.push(l); s},
+    <l:Line>   => vec![l],
+}
+
+pub Input: (Vec<Vec<Option<char>>>, Vec<Command>) = {
+    <s:Ship> r"\n 1.*\n\n"  <l:ListOfCommands>=> (s, vec![]),
+}
+
+match {
+    "move",
+    "from",
+    "to",
+    "[",
+    "]",
+    r"[0-9]+",
+    r"[A-Z]+",
+    r" (\d   )*\d\n",
+    r"\n",
+    r"\n 1.*\n\n",
+    r"   ",
+
+    r" " => { },
 }
