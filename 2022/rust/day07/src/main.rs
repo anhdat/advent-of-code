@@ -9,7 +9,7 @@ use itertools::*;
 use std::{
     collections::{HashMap, HashSet, VecDeque},
     ops::RangeInclusive,
-    path::PathBuf,
+    path::{Path, PathBuf},
     str::FromStr,
     vec,
 };
@@ -17,21 +17,16 @@ use std::{
 use libs::*;
 fn main() {}
 
-fn part_1(dir_sizes: HashMap<String, u64>) -> u64 {
-    dir_sizes
-        .iter()
-        .filter(|(_, &v)| v < 100000)
-        .map(|(_, &v)| v)
-        .sum::<u64>()
+fn part_1(dir_sizes: Vec<u64>) -> u64 {
+    dir_sizes.iter().filter(|&&v| v < 100000).sum::<u64>()
 }
 
-fn part_2(dir_sizes: HashMap<String, u64>) -> u64 {
-    let used = dir_sizes.get("/").unwrap();
+fn part_2(dir_sizes: Vec<u64>) -> u64 {
+    let used = dir_sizes.iter().max().unwrap();
 
     *dir_sizes
         .iter()
-        .filter(|(_, &v)| (used - v) < 70000000 - 30000000)
-        .map(|(_, v)| v)
+        .filter(|&v| (used - v) < 70000000 - 30000000)
         .min()
         .unwrap()
 }
@@ -44,12 +39,13 @@ pub enum Log {
     Cd(String),
 }
 
-fn parser(s: &str) -> HashMap<String, u64> {
+fn parser(s: &str) -> Vec<u64> {
     let ls = parse_nom::parse(s);
     // let ls = parse_lalrpop::parse(s);
-    let mut current_dir: Vec<String> = vec![];
-    let mut m: HashMap<String, u64> = HashMap::new();
-    m.insert("/".to_owned(), 0);
+    let mut current_dir: PathBuf = PathBuf::new();
+    current_dir.push("/");
+    let mut m: HashMap<PathBuf, u64> = HashMap::new();
+    m.insert(current_dir.clone(), 0);
 
     for l in ls {
         match l {
@@ -58,17 +54,19 @@ fn parser(s: &str) -> HashMap<String, u64> {
                     current_dir.pop();
                 }
                 path => {
-                    current_dir.push(path.to_string());
+                    current_dir.push(path);
                 }
             },
             Log::Ls => {}
             Log::Dir(name) => {
-                let k = current_dir.join("/") + "/" + &name;
-                m.entry(k).or_insert(0);
+                let mut path: PathBuf = current_dir.clone();
+                path.push(name);
+                m.entry(path).or_insert(0);
             }
             Log::File(name, size) => {
-                let k = current_dir.join("/") + "/" + &name;
-                m.entry(k).or_insert(size);
+                let mut path: PathBuf = current_dir.clone();
+                path.push(name);
+                m.entry(path).or_insert(size);
             }
         }
     }
@@ -77,15 +75,12 @@ fn parser(s: &str) -> HashMap<String, u64> {
     m.iter()
         .filter(|(_, &v)| v == 0)
         .map(|(d, _)| {
-            (
-                d.clone(),
-                m.iter()
-                    .filter(|(k, _)| k.starts_with(d))
-                    .map(|(_, v)| v)
-                    .sum::<u64>(),
-            )
+            m.iter()
+                .filter(|(k, _)| k.starts_with(d))
+                .map(|(_, v)| v)
+                .sum::<u64>()
         })
-        .collect::<HashMap<String, u64>>()
+        .collect::<Vec<u64>>()
 }
 
 const DAY: &str = "07";
